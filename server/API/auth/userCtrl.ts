@@ -63,7 +63,7 @@ export async function login(req: express.Request, res: express.Response) {
     const JWTCookie = jwt.encode(cookie, secret);
     userDB.password = undefined;
     res.cookie("userID", JWTCookie);
-    res.send({ login: true, userDB });
+    res.send({ ok: true, userDB });
   } catch (error: any) {
     res.status(500).send({ notOK: error.message });
   }

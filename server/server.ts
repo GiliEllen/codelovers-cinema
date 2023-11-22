@@ -26,13 +26,13 @@ mongoose
     console.error(err.message);
   });
 
-const httpServer = require("http").createServer(app);
-const options = {
-  cors: {
-    origin: "http://localhost:3000",
-  },
-};
-const io = require("socket.io")(httpServer, options);
+// const httpServer = require("http").createServer(app);
+// const options = {
+//   cors: {
+//     origin: "http://localhost:3000",
+//   },
+// };
+// const io = require("socket.io")(httpServer, options);
 
 const corsOptions = {
   origin: ['http://localhost:3000'],
@@ -51,19 +51,20 @@ app.use(function(req, res, next) {
 });  
 
 import userRoutes from "./API/auth/userRoutes";
+
 app.use("/api/users", userRoutes);
 
-httpServer.listen(port, () => {
+app.listen(port, () => {
   console.log(`server is listening on port ${port}`);
 });
 
-io.on("connection", (socket) => {
-  console.log(socket.id);
-  socket.on("enter_room", (data) => {
-    socket.join(data.room);
-    socket.to(data.room).emit("some event");
-  });
-  socket.on("send_message", (message) => {
-    io.to(message.roomId).emit("send_message", message);
-  });
-});
+// io.on("connection", (socket) => {
+//   console.log(socket.id);
+//   socket.on("enter_room", (data) => {
+//     socket.join(data.room);
+//     socket.to(data.room).emit("some event");
+//   });
+//   socket.on("send_message", (message) => {
+//     io.to(message.roomId).emit("send_message", message);
+//   });
+// });
