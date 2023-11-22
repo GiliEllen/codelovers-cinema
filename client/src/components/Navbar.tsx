@@ -15,7 +15,9 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-
+import { useAppDispatch, useAppSelector } from '../app/hooks'
+import { logoutUser, userSelector } from './../features/loggedInUser/loggedInUser'
+import LogoutIcon from '@mui/icons-material/Logout'
 interface Props {
   window?: () => Window
 }
@@ -30,6 +32,8 @@ export default function Navbar(props: Props) {
   const { window } = props
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const user = useAppSelector(userSelector)
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState)
@@ -47,21 +51,30 @@ export default function Navbar(props: Props) {
         Gili's cinema 🎬
       </Typography>
       <Divider />
-      <List>
-        {navItems.map((item) => (
-          <ListItem
-            onClick={() => {
-              navigate(item.href)
-            }}
-            key={item.name}
-            disablePadding
-          >
-            <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={item.name} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      {user ? (
+        <>
+          <Typography>Welcome back {user.firstName}!</Typography>
+          <IconButton onClick={() => {dispatch(logoutUser())}}>
+            <LogoutIcon />
+          </IconButton>
+        </>
+      ) : (
+        <List>
+          {navItems.map((item) => (
+            <ListItem
+              onClick={() => {
+                navigate(item.href)
+              }}
+              key={item.name}
+              disablePadding
+            >
+              <ListItemButton sx={{ textAlign: 'center' }}>
+                <ListItemText primary={item.name} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      )}
     </Box>
   )
 
@@ -89,15 +102,24 @@ export default function Navbar(props: Props) {
           >
             Gili's cinema 🎬
           </Typography>
-          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {navItems.map((item) => (
-              <NavLink to={item.href}>
-                <Button key={item.name} sx={{ color: '#fff' }}>
-                  {item.name}
-                </Button>
-              </NavLink>
-            ))}
-          </Box>
+          {user ? (
+            <>
+              <Typography>Welcome back {user.firstName}!</Typography>
+              <IconButton onClick={() => {dispatch(logoutUser())}}>
+                <LogoutIcon />
+              </IconButton>
+            </>
+          ) : (
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+              {navItems.map((item) => (
+                <NavLink to={item.href}>
+                  <Button key={item.name} sx={{ color: '#fff' }}>
+                    {item.name}
+                  </Button>
+                </NavLink>
+              ))}
+            </Box>
+          )}
         </Toolbar>
       </AppBar>
       <nav>

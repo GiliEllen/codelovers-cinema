@@ -69,6 +69,28 @@ export async function login(req: express.Request, res: express.Response) {
   }
 }
 
+
+export const getUserByCookie = async (req: express.Request, res: express.Response) => {
+  try {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new Error("Couldn't load secret from .env");
+    const { userID } = req.cookies;
+    if (!userID) throw new Error("Couldn't find user from cookies");
+
+    const decodedUserId = jwt.decode(userID, secret);
+    const { userId } = decodedUserId;
+
+    const userDB = await UserModel.findById(userId);
+    if (!userDB)
+      throw new Error(`Couldn't find user id with the id: ${userId}`);
+    userDB.password = undefined;
+    res.send({ userDB });
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).send({ error: error.message });
+  }
+};
+
 export async function logout(req: express.Request, res: express.Response) {
   try {
     res.clearCookie("userID");

@@ -1,7 +1,15 @@
 import { Box, Typography } from '@mui/material'
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect } from 'react'
+import { useAppDispatch } from '../app/hooks'
+import { login } from '../features/loggedInUser/userAPI'
 
 export const Home: React.FC = () => {
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    dispatch(login())
+  },[])
+
   return (
     <Fragment>
       {/*Big Image carosel*/}
