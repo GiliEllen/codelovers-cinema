@@ -7,8 +7,8 @@ const saltRounds = 10;
 
 export async function register(req: express.Request, res: express.Response) {
   try {
-    const { firstName, lastName, email, password, rePassword } = req.body;
-    if (!firstName || !lastName || !email || !password || !rePassword)
+    const { firstName, lastName, email, password } = req.body;
+    if (!firstName || !lastName || !email || !password)
       throw new Error("missing data from client on register");
 
     const { error } = UserJoi.validate({
@@ -16,7 +16,6 @@ export async function register(req: express.Request, res: express.Response) {
       lastName,
       email,
       password,
-      rePassword,
     });
     if (error) throw error;
 

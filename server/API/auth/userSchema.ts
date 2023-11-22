@@ -26,5 +26,4 @@ export const UserJoi = Joi.object({
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
-  rePassword: Joi.ref("password"),
 });

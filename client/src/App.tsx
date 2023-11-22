@@ -10,7 +10,7 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Navbar />
-      <Box sx={{ paddingTop: '100px' }}>
+      <Box sx={{ paddingTop: '100px', width: '90%', margin: 'auto' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />

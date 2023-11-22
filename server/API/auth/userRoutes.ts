@@ -4,7 +4,7 @@ import { register, login} from "./userCtrl";
 const router = express.Router();
 
 router
-.post("", register)
+.post("/register", register)
 .post("/login", login)
 
 
