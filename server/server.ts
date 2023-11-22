@@ -52,8 +52,9 @@ app.use(function(req, res, next) {
 });  
 
 import userRoutes from "./API/auth/userRoutes";
-
 app.use("/api/users", userRoutes);
+import movieRoutes from "./API/movies/movieRoutes";
+app.use("/api/movies", movieRoutes);
 
 app.listen(port, () => {
   console.log(`server is listening on port ${port}`);

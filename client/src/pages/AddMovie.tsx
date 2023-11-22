@@ -23,6 +23,7 @@ const AddMovie = () => {
     duration: 90,
     description: '',
   })
+  const [movieId, setMovieId] = useState<string>()
   const [expanded, setExpanded] = useState<string | false>('panel1')
   const [screeningDate, setScreeningDate] = useState<string>()
   const [time, setTime] = useState<string>()
@@ -42,23 +43,45 @@ const AddMovie = () => {
     //@ts-ignore
     setMovie({ ...movie, [key]: ev.target.value })
   }
-
   const handleAddMovie = async (ev: React.FormEvent<HTMLFormElement>) => {
     try {
       ev.preventDefault()
       const { data } = await axios.post(
-        `${apiURL}/movies`,
+        `${apiURL}/api/movies`,
         { movie },
         { withCredentials: true }
       )
 
       if (data.ok) {
+        setMovieId(data.message._id)
         setStep(2)
       }
     } catch (error) {
       console.error(error)
     }
   }
+
+  const handleAddScreenings = async (ev:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const {data} = await axios.post(`${apiURL}/api/movies/${movieId}`, {date: screeningDate, times})
+    if (data.ok) {
+        console.log("successfully added screening")
+
+    }
+  }
+
+//   const handleFilterTimeArray = (timeString: string) => {
+//     const hour = timeString.substring(0, 2)
+//     const minutes = timeString.substring(3, 5)
+//     const mappedTimes = times.map((timeInArr) => {
+//         const hourTimeInArr = Number(timeInArr.substring(0, 2))
+//         const minutestTimeInArr = Number(timeInArr.substring(3, 5))
+//         return {hour: hourTimeInArr, minutes: minutestTimeInArr}
+//     })
+
+
+//   }
+
+
 
   return (
     <Paper>
@@ -153,16 +176,15 @@ const AddMovie = () => {
                 the end.
               </Typography>
               <Typography>
-                * if you wish to remove a screening time, click on it
+                * If you wish to remove a screening time, click on it
+              </Typography>
+              <Typography>
+               * Notice that after saving a screening, you cannot update it.
               </Typography>
             </AccordionDetails>
           </Accordion>
 
           <Typography>Choose a Date:</Typography>
-          {/* <DatePicker
-            value={screeningDate}
-            onChange={(newValue) => setScreeningDate(newValue)}
-          /> */}
           <input
             type="date"
             id=""
@@ -172,10 +194,6 @@ const AddMovie = () => {
           {screeningDate ? (
             <Box>
               <Typography>Choose Times:</Typography>
-              {/* <TimePicker
-                value={time}
-                onChange={(newValue) => setTime(newValue)}
-              /> */}
               <input
                 type="time"
                 id=""
@@ -185,6 +203,7 @@ const AddMovie = () => {
               <Button
                 onClick={(ev: any) => {
                   setTimes([...times, time])
+                //   if (time) handleFilterTimeArray(time)
                 }}
                 variant="contained"
               >
@@ -210,6 +229,7 @@ const AddMovie = () => {
                   )
                 })}
               </Box>
+              <Button variant='contained' onClick={handleAddScreenings}>Add Screenings</Button>
             </Box>
           ) : null}
         </AccordionDetails>

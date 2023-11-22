@@ -1,4 +1,4 @@
-import MovieModel, { ScreeningModel } from "./movieModel";
+import MovieModel, { ScreeningModel, SeatStatus } from "./movieModel";
 
 export async function addMovie(req, res) {
   try {
@@ -40,6 +40,31 @@ export async function getMoviesByID(req, res) {
       movieId: req.params.movieId,
     });
     res.send({ ok: true, movieDB, screeningsDB });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: error.message });
+  }
+}
+
+export async function addScreening(req, res) {
+  try {
+    const { date, times } = req.body;
+    const { movieId } = req.params;
+    if (!date || !times || !movieId) {
+      throw new Error("no information on addScreenings");
+    }
+
+    const screenings = times.map((time, idx) => {
+      return {
+        movieId,
+        date,
+        time,
+        seats: [].fill({ id: idx + 1, status: SeatStatus.AVAILABLE }, 0, 100),
+      };
+    });
+    await ScreeningModel.insertMany(screenings);
+    const allScreeningsDB = await ScreeningModel.find({ movieId });
+    res.send({ ok: true, message: allScreeningsDB });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: error.message });

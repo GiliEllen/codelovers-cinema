@@ -4,7 +4,7 @@ import mongoose, { Schema } from "mongoose";
 const MovieSchema = new Schema({
   title: String,
   description: String,
-  duration: number
+  duration: Number
 });
 
 const MovieModel = mongoose.model("movies", MovieSchema);
@@ -19,18 +19,19 @@ const ScreeningSchema = new Schema({
   date: Date,
   seats: {
     type: []
-  }
+  }, 
+  time: String
 });
 
 export const ScreeningModel = mongoose.model("screenings", ScreeningSchema);
 
 
-interface Seat {
+export interface Seat {
   id: number,
   status: SeatStatus 
 }
 
-enum SeatStatus {
+export enum SeatStatus {
   TAKEN = "taken",
   AVAILABLE = "available",
   PENDING = "pending"
