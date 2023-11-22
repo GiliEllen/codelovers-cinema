@@ -59,7 +59,7 @@ export async function addScreening(req, res) {
         movieId,
         date,
         time,
-        seats: [].fill({ id: idx + 1, status: SeatStatus.AVAILABLE }, 0, 100),
+        seats: Array(100).fill({ id: idx + 1, status: SeatStatus.AVAILABLE }),
       };
     });
     await ScreeningModel.insertMany(screenings);
