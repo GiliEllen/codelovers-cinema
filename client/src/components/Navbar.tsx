@@ -13,7 +13,8 @@ import MenuIcon from '@mui/icons-material/Menu'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 interface Props {
   window?: () => Window
@@ -28,6 +29,7 @@ const navItems = [
 export default function Navbar(props: Props) {
   const { window } = props
   const [mobileOpen, setMobileOpen] = React.useState(false)
+  const navigate = useNavigate()
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState)
@@ -35,13 +37,25 @@ export default function Navbar(props: Props) {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
+      <Typography
+        onClick={() => {
+          navigate('/')
+        }}
+        variant="h6"
+        sx={{ my: 2 }}
+      >
         Gili's cinema 🎬
       </Typography>
       <Divider />
       <List>
         {navItems.map((item) => (
-          <ListItem key={item.name} disablePadding>
+          <ListItem
+            onClick={() => {
+              navigate(item.href)
+            }}
+            key={item.name}
+            disablePadding
+          >
             <ListItemButton sx={{ textAlign: 'center' }}>
               <ListItemText primary={item.name} />
             </ListItemButton>
