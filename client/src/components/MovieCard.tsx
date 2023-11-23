@@ -1,5 +1,13 @@
 import React, { FC, useState, useEffect } from 'react'
-import { Box, Paper, Typography, Chip } from '@mui/material'
+import {
+  Box,
+  Paper,
+  Typography,
+  Chip,
+  Button,
+  Stack,
+  Grid,
+} from '@mui/material'
 import { Movie } from '../types/types'
 
 interface Props {
@@ -43,19 +51,24 @@ const MovieCard: FC<Props> = ({ movie }) => {
         <Typography variant="h6">{movie.title}</Typography>
       </Box>
 
-      <Box>
+      <Stack spacing={2} alignItems={'center'}>
         <Typography>Showing on:</Typography>
-        <Box>
+        <Grid container spacing={1} direction={'row'}>
           {datesArr.map((date) => {
             return (
-              <Chip
-                color="primary"
-                label={`${date.getDate()}.${date.getMonth() + 1}`}
-              />
+              <Grid item>
+                <Chip
+                  color="primary"
+                  label={`${date.getDate()}.${date.getMonth() + 1}`}
+                />
+              </Grid>
             )
           })}
+        </Grid>
+        <Box>
+          <Button sx={{ alignSelf: 'center' }}>Order now</Button>
         </Box>
-      </Box>
+      </Stack>
     </Paper>
   )
 }
