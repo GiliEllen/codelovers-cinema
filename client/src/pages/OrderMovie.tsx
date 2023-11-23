@@ -25,7 +25,8 @@ const OrderMovie = () => {
   const [screeningToShow, setScreeningToshow] = useState<any>()
   const [seatId, setSeatId] = useState<number>(0)
   const [displaySit, setDisplaySit] = useState({ row: 0, sit: 0 })
-  const [showModal, setShowModal] = useState(false)
+  const [showModalOrder, setShowModalOrder] = useState(false)
+  const [showModalError, setShowModalError] = useState(false)
   const [email, setEmail] = useState<string>('')
   const { movieId } = useParams()
   const user = useAppSelector(userSelector)
@@ -48,6 +49,7 @@ const OrderMovie = () => {
     )
 
     if (seatStatus && seatId == id) {
+      console.log(1)
       //Make avialable and reset seatId
       setSeatId(0)
       const {
@@ -64,9 +66,11 @@ const OrderMovie = () => {
         }
       }
     } else if (seatStatus && seatId != id) {
+      console.log(2)
       console.log('already taken')
       return
     } else if (!seatStatus && seatId == id) {
+      console.log(3)
       setSeatId(id)
       const {
         data,
@@ -75,6 +79,7 @@ const OrderMovie = () => {
         { chosenSeatId: id, update: 'pending' }
       )
       if (data.ok) {
+        console.log(data.message.errorMsg)
         if (data.message.errorMsg) {
           console.log(data.message.errorMsg)
         } else {
@@ -82,7 +87,7 @@ const OrderMovie = () => {
         }
       }
     } else if (!seatStatus && seatId != id && seatId != 0) {
-      console.log('4')
+      console.log(4)
       const {
         data,
       } = await axios.post(
@@ -90,8 +95,8 @@ const OrderMovie = () => {
         { chosenSeatId: id, update: 'pending' }
       )
       if (data.ok) {
-        if (data.message.errorMsg) {
-          console.log(data.message.errorMsg)
+        if (data.message) {
+          console.log(data.message)
         } else {
           const {
             data,
@@ -110,7 +115,8 @@ const OrderMovie = () => {
         }
       }
     } else if (!seatStatus && seatId == 0) {
-      setSeatId(id)
+      console.log(5)
+
       const {
         data,
       } = await axios.post(
@@ -118,9 +124,11 @@ const OrderMovie = () => {
         { chosenSeatId: id, update: 'pending' }
       )
       if (data.ok) {
-        if (data.message.errorMsg) {
-          console.log(data.message.errorMsg)
+        if (data.message) {
+          console.log(data.message)
+          setShowModalError(true)
         } else {
+          setSeatId(id)
           handleGetMovie()
         }
       }
@@ -138,21 +146,22 @@ const OrderMovie = () => {
   }
 
   const handleClose = () => {
-    setShowModal(false)
+    setShowModalOrder(false)
+    setShowModalError(false)
   }
   const handleOrder = async () => {
     try {
-        const {
-          data,
-        } = await axios.post(
-          `${apiURL}/api/movies/screenings/${screeningToOrderId}`,
-          { chosenSeatId: seatId, update: 'taken' }
-        )
-        if (data.ok) {
-          navigate("/")
-        }
+      const {
+        data,
+      } = await axios.post(
+        `${apiURL}/api/movies/screenings/${screeningToOrderId}`,
+        { chosenSeatId: seatId, update: 'taken' }
+      )
+      if (data.ok) {
+        navigate('/')
+      }
     } catch (error) {
-        console.error(error)
+      console.error(error)
     }
   }
 
@@ -227,7 +236,7 @@ const OrderMovie = () => {
                 </Typography>
                 <Button
                   onClick={() => {
-                    setShowModal(true)
+                    setShowModalOrder(true)
                   }}
                   variant="contained"
                 >
@@ -238,8 +247,8 @@ const OrderMovie = () => {
           </Box>
         ) : null}
       </Box>
-      {showModal ? (
-        <Dialog open={showModal}>
+      {showModalOrder ? (
+        <Dialog open={showModalOrder}>
           <DialogTitle>Finish up:</DialogTitle>
           <DialogContent>
             {user && user.email ? (
@@ -249,7 +258,7 @@ const OrderMovie = () => {
                 label="Email"
                 required
                 value={email}
-                onInput={(ev:any) => {
+                onInput={(ev: any) => {
                   setEmail(ev.target.value)
                 }}
               />
@@ -261,12 +270,23 @@ const OrderMovie = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            <Button disabled={user&& user.email || email ? false : true} onClick={handleOrder} autoFocus>
+            <Button
+              disabled={(user && user.email) || email ? false : true}
+              onClick={handleOrder}
+              autoFocus
+            >
               Confirm
             </Button>
           </DialogActions>
         </Dialog>
       ) : null}
+      <Dialog open={showModalError}>
+        <DialogTitle>It seems this seat is being ordered right now.</DialogTitle>
+        <DialogContent>Please Try a diffrent sit.</DialogContent>
+        <DialogActions>
+            <Button onClick={handleClose}>OK</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
