@@ -13,6 +13,9 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Paper,
+  Chip,
+  Stack,
 } from '@mui/material'
 import { Movie } from '../types/types'
 import ChairIcon from '@mui/icons-material/Chair'
@@ -182,71 +185,95 @@ const OrderMovie = () => {
   }, [seatId])
 
   return (
-    <Box>
-      <Box>
-        {/*MOVIE info*/}
-        <Typography variant="h4">Order now</Typography>
-        <Typography>Choose Time:</Typography>
-        <Select onChange={(ev: any) => setScreeningToOrderId(ev.target.value)}>
-          {movie?.screenings.map((screening) => {
-            const newDate = new Date(screening.dateTime)
-            return (
-              <MenuItem value={`${screening._id}`}>
-                {`${newDate.getDate()}.${
-                  newDate.getMonth() + 1
-                } at ${newDate.getHours()}:${newDate.getMinutes()}`}
-              </MenuItem>
-            )
-          })}
-        </Select>
-      </Box>
-      <Box>
-        {screeningToShow && screeningToShow._id ? (
-          <Box>
-            <Typography>Choose a sit</Typography>
-            <Box
-              sx={{ display: 'grid', gridTemplateColumns: 'repeat(10, 10%)' }}
-            >
-              {screeningToShow.seats.map((seat: any) => {
-                return (
-                  <Box
-                    key={seat.id}
-                    onClick={() => {
-                      handleUpdateScreeningSeats(seat.id)
-                    }}
-                    sx={{
-                      color:
-                        seat.status == 'taken'
-                          ? 'red'
-                          : seat.status === 'pending'
-                          ? 'orange'
-                          : 'green',
-                    }}
-                  >
-                    <ChairIcon />
-                  </Box>
-                )
-              })}
-            </Box>
-            {seatId ? (
+    <Box width={'90vw'}>
+      <Box
+        sx={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}
+      >
+        <Paper sx={{ minWidth: '35vw', padding: 3 }}>
+          {movie ? (
+            <Stack width={'30vw'} gap={3}>
+              <Typography variant="h4">{movie.title}</Typography>
+              <img width={'100%'} src={movie.image} alt={movie.title} />
               <Box>
-                <Typography>
-                  You chose sit number {displaySit.sit} in row number{' '}
-                  {displaySit.row}
-                </Typography>
-                <Button
-                  onClick={() => {
-                    setShowModalOrder(true)
+                <Chip
+                  color="primary"
+                  label={`Duartion: ${movie.duration} minutes`}
+                />
+              </Box>
+              <Typography>{movie.description}</Typography>
+            </Stack>
+          ) : null}
+        </Paper>
+        <Paper sx={{ minWidth: '50vw', padding: 3 }}>
+          <Typography variant="h4">Order now</Typography>
+          <Typography>Choose Time:</Typography>
+          <Select
+            onChange={(ev: any) => setScreeningToOrderId(ev.target.value)}
+          >
+            {movie?.screenings.map((screening) => {
+              const newDate = new Date(screening.dateTime)
+              return (
+                <MenuItem value={`${screening._id}`}>
+                  {`${newDate.getDate()}.${
+                    newDate.getMonth() + 1
+                  } at ${newDate.getHours()}:${newDate.getMinutes()}`}
+                </MenuItem>
+              )
+            })}
+          </Select>
+          <Box>
+            {screeningToShow && screeningToShow._id ? (
+              <Box>
+                <Typography>Choose a sit</Typography>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(10, 10%)',
                   }}
-                  variant="contained"
                 >
-                  Order
-                </Button>
+                  {screeningToShow.seats.map((seat: any) => {
+                    return (
+                      <Box
+                        key={seat.id}
+                        onClick={() => {
+                          handleUpdateScreeningSeats(seat.id)
+                        }}
+                        sx={{
+                          color:
+                            seat.status == 'taken'
+                              ? 'red'
+                              : seat.status === 'pending'
+                              ? 'orange'
+                              : 'green',
+                        }}
+                      >
+                        <ChairIcon />
+                      </Box>
+                    )
+                  })}
+                </Box>
+                {seatId ? (
+                  <Box>
+                    <Typography>
+                      You chose sit number {displaySit.sit} in row number{' '}
+                      {displaySit.row}
+                    </Typography>
+                    <Button
+                      onClick={() => {
+                        setShowModalOrder(true)
+                      }}
+                      variant="contained"
+                    >
+                      Order
+                    </Button>
+                  </Box>
+                ) : null}
               </Box>
             ) : null}
           </Box>
-        ) : null}
+        </Paper>
       </Box>
+
       {showModalOrder ? (
         <Dialog open={showModalOrder}>
           <DialogTitle>Finish up:</DialogTitle>
@@ -281,10 +308,12 @@ const OrderMovie = () => {
         </Dialog>
       ) : null}
       <Dialog open={showModalError}>
-        <DialogTitle>It seems this seat is being ordered right now.</DialogTitle>
+        <DialogTitle>
+          It seems this seat is being ordered right now.
+        </DialogTitle>
         <DialogContent>Please Try a diffrent sit.</DialogContent>
         <DialogActions>
-            <Button onClick={handleClose}>OK</Button>
+          <Button onClick={handleClose}>OK</Button>
         </DialogActions>
       </Dialog>
     </Box>

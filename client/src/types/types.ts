@@ -1,7 +1,7 @@
 export interface Movie {
   title: string
   description: string
-  duartion: number
+  duration: number
   _id: string,
   image: string,
   screenings: Screenings[]
