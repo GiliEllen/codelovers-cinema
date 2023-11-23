@@ -34,6 +34,7 @@ const corsOptions = {
   credentials: true,
   enablePreflight: true,
   optionsSuccessStatus: 200,
+  exposedHeaders: ["set-cookie"]
 }
 
 app.use(cors(corsOptions));

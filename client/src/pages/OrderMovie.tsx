@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import { apiURL } from '../api/apiUrl'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   Box,
   Typography,
@@ -29,6 +29,7 @@ const OrderMovie = () => {
   const [email, setEmail] = useState<string>('')
   const { movieId } = useParams()
   const user = useAppSelector(userSelector)
+  const navigate = useNavigate()
 
   const handleGetMovie = async () => {
     try {
@@ -139,6 +140,21 @@ const OrderMovie = () => {
   const handleClose = () => {
     setShowModal(false)
   }
+  const handleOrder = async () => {
+    try {
+        const {
+          data,
+        } = await axios.post(
+          `${apiURL}/api/movies/screenings/${screeningToOrderId}`,
+          { chosenSeatId: seatId, update: 'taken' }
+        )
+        if (data.ok) {
+          navigate("/")
+        }
+    } catch (error) {
+        console.error(error)
+    }
+  }
 
   useEffect(() => {
     setScreeningToshow(
@@ -245,7 +261,7 @@ const OrderMovie = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            <Button disabled={user&& user.email || email ? false : true} onClick={handleClose} autoFocus>
+            <Button disabled={user&& user.email || email ? false : true} onClick={handleOrder} autoFocus>
               Confirm
             </Button>
           </DialogActions>

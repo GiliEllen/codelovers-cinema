@@ -19,7 +19,7 @@ const Login = () => {
         {
           email,
           password
-        }
+        },  { withCredentials: true }
       )
       if (data.ok) {
         navigate('/')

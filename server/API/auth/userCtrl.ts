@@ -36,7 +36,7 @@ export async function register(req: express.Request, res: express.Response) {
     const cookie = { userId: userDB._id };
     const JWTCookie = jwt.encode(cookie, secret);
 
-    res.cookie("userID", JWTCookie);
+    res.cookie("userID", JWTCookie, { maxAge: 50000,});
     res.send({ ok: true, message: userDB });
   } catch (error: any) {
     res.status(500).send({ notOK: error });
@@ -62,7 +62,7 @@ export async function login(req: express.Request, res: express.Response) {
 
     const JWTCookie = jwt.encode(cookie, secret);
     userDB.password = undefined;
-    res.cookie("userID", JWTCookie);
+    res.cookie("userID", JWTCookie, { maxAge: 50000,});
     res.send({ ok: true, userDB });
   } catch (error: any) {
     res.status(500).send({ notOK: error.message });

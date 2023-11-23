@@ -113,6 +113,8 @@ export async function updateScreening(req, res) {
           }
         } else if (update === SeatStatus.AVAILABLE) {
           return { ...seat, status: update };
+        } else if (update === SeatStatus.TAKEN) {
+          return { ...seat, status: update };
         }
       } else {
         return seat;
