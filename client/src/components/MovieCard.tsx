@@ -9,6 +9,7 @@ import {
   Grid,
 } from '@mui/material'
 import { Movie, Screenings } from '../types/types'
+import { useNavigate } from 'react-router-dom'
 
 interface Props {
   movie: Movie
@@ -16,6 +17,8 @@ interface Props {
 
 const MovieCard: FC<Props> = ({ movie }) => {
   const [datesArr, setDatesArr] = useState<Screenings[]>([])
+
+  const navigate = useNavigate()
 
 function filterUniqueDates(data:any) {
     const lookup = new Set();
@@ -77,7 +80,7 @@ function filterUniqueDates(data:any) {
           })}
         </Grid>
         <Box>
-          <Button sx={{ alignSelf: 'center' }}>Order now</Button>
+          <Button onClick={() => navigate(`/movie/${movie._id}`)} sx={{ alignSelf: 'center' }}>Order now</Button>
         </Box>
       </Stack>
     </Paper>

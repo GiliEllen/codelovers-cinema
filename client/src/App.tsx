@@ -6,6 +6,7 @@ import Register from './pages/Register'
 import { Box } from '@mui/material'
 import Login from './pages/Login'
 import AddMovie from './pages/AddMovie'
+import OrderMovie from './pages/OrderMovie'
 
 const App: React.FC = () => {
   return (
@@ -17,6 +18,7 @@ const App: React.FC = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/add-movie" element={<AddMovie />} />
+          <Route path="/movie/:movieId" element={<OrderMovie />} />
         </Routes>
       </Box>
     </BrowserRouter>

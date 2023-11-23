@@ -1,4 +1,5 @@
 import MovieModel, { ScreeningModel, SeatStatus } from "./movieModel";
+import mongoose from "mongoose";
 
 export async function addMovie(req, res) {
   try {
@@ -23,6 +24,34 @@ export async function addMovie(req, res) {
   }
 }
 
+export async function getMovieAndScreeningsByID(req, res) {
+  try {
+    const {movieId} = req.params
+    if (!movieId) {
+      throw new Error("no movieId provided on getMovieAndScreeningsByID")
+    }
+    const id = new mongoose.Types.ObjectId(movieId)
+
+    const movieDB = await MovieModel.aggregate([
+      {
+        $match: {
+          "_id": id,
+        },
+      },
+      {
+      $lookup: {
+        from: 'screenings',
+        localField: "_id",
+        foreignField: "movieId",
+        as: "screenings"
+      }
+    }])
+    res.send({ ok: true, message: movieDB });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: error.message });
+  }
+}
 export async function getMoviesAndScreenings(req, res) {
   try {
     // const moviesDB = await MovieModel.find({});
