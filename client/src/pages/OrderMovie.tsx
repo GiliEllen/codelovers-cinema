@@ -2,16 +2,33 @@ import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import { apiURL } from '../api/apiUrl'
 import { useParams } from 'react-router-dom'
-import { Box, Typography, Chip, Select, MenuItem, Grid } from '@mui/material'
+import {
+  Box,
+  Typography,
+  Select,
+  MenuItem,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+} from '@mui/material'
 import { Movie } from '../types/types'
 import ChairIcon from '@mui/icons-material/Chair'
+import { useAppSelector } from '../app/hooks'
+import { userSelector } from '../features/loggedInUser/loggedInUser'
 
 const OrderMovie = () => {
   const [movie, setMovie] = useState<Movie>()
   const [screeningToOrderId, setScreeningToOrderId] = useState<string>()
   const [screeningToShow, setScreeningToshow] = useState<any>()
   const [seatId, setSeatId] = useState<number>(0)
+  const [displaySit, setDisplaySit] = useState({ row: 0, sit: 0 })
+  const [showModal, setShowModal] = useState(false)
+  const [email, setEmail] = useState<string>('')
   const { movieId } = useParams()
+  const user = useAppSelector(userSelector)
 
   const handleGetMovie = async () => {
     try {
@@ -19,7 +36,6 @@ const OrderMovie = () => {
       if (data.ok) {
         setMovie(data.message[0])
       }
-      console.log(data)
     } catch (error) {
       console.error(error)
     }
@@ -31,7 +47,6 @@ const OrderMovie = () => {
     )
 
     if (seatStatus && seatId == id) {
-      console.log('1')
       //Make avialable and reset seatId
       setSeatId(0)
       const {
@@ -48,11 +63,9 @@ const OrderMovie = () => {
         }
       }
     } else if (seatStatus && seatId != id) {
-      console.log('2')
       console.log('already taken')
       return
     } else if (!seatStatus && seatId == id) {
-      console.log('3')
       setSeatId(id)
       const {
         data,
@@ -96,25 +109,38 @@ const OrderMovie = () => {
         }
       }
     } else if (!seatStatus && seatId == 0) {
-        setSeatId(id)
-        const {
-          data,
-        } = await axios.post(
-          `${apiURL}/api/movies/screenings/${screeningToOrderId}`,
-          { chosenSeatId: id, update: 'pending' }
-        )
-        if (data.ok) {
-          if (data.message.errorMsg) {
-            console.log(data.message.errorMsg)
-          } else {
-            handleGetMovie()
-          }
+      setSeatId(id)
+      const {
+        data,
+      } = await axios.post(
+        `${apiURL}/api/movies/screenings/${screeningToOrderId}`,
+        { chosenSeatId: id, update: 'pending' }
+      )
+      if (data.ok) {
+        if (data.message.errorMsg) {
+          console.log(data.message.errorMsg)
+        } else {
+          handleGetMovie()
         }
+      }
     }
   }
 
+  const calculateSit = (id: number) => {
+    if (seatId == 0) {
+      return
+    }
+    const row = Math.floor(id / 10) + 1
+    const sit = Math.floor(id % 10)
+
+    setDisplaySit({ sit, row })
+  }
+
+  const handleClose = () => {
+    setShowModal(false)
+  }
+
   useEffect(() => {
-    console.log(movie)
     setScreeningToshow(
       movie?.screenings.filter((screen) => {
         return screen._id === screeningToOrderId
@@ -125,6 +151,10 @@ const OrderMovie = () => {
   useEffect(() => {
     handleGetMovie()
   }, [])
+
+  useEffect(() => {
+    calculateSit(seatId)
+  }, [seatId])
 
   return (
     <Box>
@@ -173,9 +203,54 @@ const OrderMovie = () => {
                 )
               })}
             </Box>
+            {seatId ? (
+              <Box>
+                <Typography>
+                  You chose sit number {displaySit.sit} in row number{' '}
+                  {displaySit.row}
+                </Typography>
+                <Button
+                  onClick={() => {
+                    setShowModal(true)
+                  }}
+                  variant="contained"
+                >
+                  Order
+                </Button>
+              </Box>
+            ) : null}
           </Box>
         ) : null}
       </Box>
+      {showModal ? (
+        <Dialog open={showModal}>
+          <DialogTitle>Finish up:</DialogTitle>
+          <DialogContent>
+            {user && user.email ? (
+              <TextField disabled value={user.email} />
+            ) : (
+              <TextField
+                label="Email"
+                required
+                value={email}
+                onInput={(ev:any) => {
+                  setEmail(ev.target.value)
+                }}
+              />
+            )}
+            <Typography>
+              You chose sit number {displaySit.sit} in row number{' '}
+              {displaySit.row}. Do you wish to Procceed?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button disabled={user&& user.email || email ? false : true} onClick={handleClose} autoFocus>
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      ) : null}
     </Box>
   )
 }
