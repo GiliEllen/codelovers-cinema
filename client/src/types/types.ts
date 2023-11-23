@@ -8,6 +8,7 @@ export interface Movie {
 }
 
 export interface Screenings {
+  _id: string,
   movieId: string,
   dateTime: Date,
   seats: [{
