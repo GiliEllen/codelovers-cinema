@@ -5,14 +5,13 @@ import { login } from '../features/loggedInUser/userAPI'
 import axios from 'axios'
 import { apiURL } from '../api/apiUrl'
 import MovieCard from '../components/MovieCard'
-import HoverCarousel from 'hover-carousel'
+// import HoverCarousel from 'hover-carousel'
 import { Movie } from '../types/types'
 
 export const Home: React.FC = () => {
   const [movies, setMovies] = useState<any[]>([])
   const [moviesPosters, setMoviesPosters] = useState<any[]>([])
   const dispatch = useAppDispatch()
-  const images = ['image1.jpg', 'image2.jpg', 'image3.jpg']
 
   const getAllMovies = async () => {
     try {
@@ -41,11 +40,14 @@ export const Home: React.FC = () => {
 
   return (
     <Fragment>
-      <HoverCarousel images={moviesPosters} />
+      {/* {moviesPosters.length > 0 ? <HoverCarousel imas={moviesPosters} /> : null} */}
+
       <Box>
         <Typography variant="h3">Screening Now:</Typography>
 
-        <Box sx={{display: "flex", gap: 3, flexWrap: "wrap"}}>
+        <Box
+          sx={{ display: 'flex', gap: 3, width: '90vw', overflowX: 'scroll' }}
+        >
           {movies.length > 0 ? (
             <>
               {movies.map((movie) => {

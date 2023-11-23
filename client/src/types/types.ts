@@ -9,9 +9,8 @@ export interface Movie {
 
 export interface Screenings {
   movieId: string,
-  date: Date,
+  dateTime: Date,
   seats: [{
     id: number, status: string
   }]
-  time: string
 }

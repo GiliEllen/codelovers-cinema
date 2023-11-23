@@ -69,8 +69,7 @@ const AddMovie = () => {
     ev: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const { data } = await axios.post(`${apiURL}/api/movies/${movieId}`, {
-      date: screeningDate,
-      times,
+      times
     })
     if (data.ok) {
       console.log('successfully added screening')
@@ -261,11 +260,13 @@ const AddMovie = () => {
               <Typography>Choose a Date:</Typography>
               <input
                 type="date"
-                id=""
                 value={screeningDate}
-                onChange={(ev) => setScreeningDate(ev.target.value)}
+                onChange={(ev) => {
+                  setScreeningDate(ev.target.value)
+                }}
               />
             </Box>
+            {screeningDate ? <p>{JSON.stringify(screeningDate)}</p> : <p></p>}
 
             {screeningDate ? (
               <Box
@@ -286,7 +287,17 @@ const AddMovie = () => {
                 />
                 <Button
                   onClick={(ev: any) => {
-                    setTimes([...times, time])
+                    const newDate = new Date(screeningDate)
+                    if (time) {
+                      console.log(time)
+                      const hour = Number(time.substring(0, 2))
+                      const minutes = Number(time.substring(3, 5))
+                      newDate.setHours(hour)
+                      newDate.setMinutes(minutes)
+                      setTimes([...times, newDate])
+                      console.log(times)
+                    }
+
                     //   if (time) handleFilterTimeArray(time)
                   }}
                   variant="contained"
@@ -315,7 +326,7 @@ const AddMovie = () => {
                         key={`${screeningDate}-${timeBox}`}
                         id={`${idx}`}
                       >
-                        {timeBox}
+                        {`${timeBox.getHours()}:${timeBox.getMinutes()}`}
                       </Paper>
                     )
                   })}

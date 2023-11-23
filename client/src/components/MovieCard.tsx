@@ -8,27 +8,48 @@ import {
   Stack,
   Grid,
 } from '@mui/material'
-import { Movie } from '../types/types'
+import { Movie, Screenings } from '../types/types'
 
 interface Props {
   movie: Movie
 }
 
 const MovieCard: FC<Props> = ({ movie }) => {
-  const [datesArr, setDatesArr] = useState<Date[]>([])
+  const [datesArr, setDatesArr] = useState<Screenings[]>([])
 
-  let findUniqeDates = () => {
-    let unique_values = [
-      ...new Set(movie.screenings.map((element) => element.date.toString())),
-    ]
-    const arr = unique_values.map((value) => {
-      return new Date(value)
+//   let findUniqeDates = () => {
+//     let unique_values = [
+//       ...new Set(movie.screenings.map((element) => element.dateTime.toString())),
+//     ]
+//     const arr = unique_values.map((value) => {
+//       return new Date(value)
+//     })
+//     setDatesArr(arr)
+//   }
+
+function filterUniqueDates(data:any) {
+    const lookup = new Set();
+    
+    const arr =  data.filter((date:Screenings) => {
+        let dateToCheck = new Date(date.dateTime)
+        dateToCheck.setMinutes(0)
+        dateToCheck.setHours(0)
+       const serialised = dateToCheck.getTime();
+      if (lookup.has(serialised)) {
+        return false;
+      } else { 
+        lookup.add(serialised);
+        return true;
+      }
     })
+    console.log(arr)
     setDatesArr(arr)
   }
 
   useEffect(() => {
-    findUniqeDates()
+    // findUniqeDates()
+    filterUniqueDates(movie.screenings)
+    
   }, [])
   return (
     <Paper
@@ -55,11 +76,12 @@ const MovieCard: FC<Props> = ({ movie }) => {
         <Typography>Showing on:</Typography>
         <Grid container spacing={1} direction={'row'}>
           {datesArr.map((date) => {
+            const newDate = new Date(date.dateTime)
             return (
               <Grid item>
                 <Chip
                   color="primary"
-                  label={`${date.getDate()}.${date.getMonth() + 1}`}
+                  label={`${newDate.getDate()}.${newDate.getMonth() + 1}`}
                 />
               </Grid>
             )

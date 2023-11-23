@@ -58,17 +58,16 @@ export async function getMoviesByID(req, res) {
 
 export async function addScreening(req, res) {
   try {
-    const { date, times } = req.body;
+    const { times } = req.body;
     const { movieId } = req.params;
-    if (!date || !times || !movieId) {
+    if (!times || !movieId) {
       throw new Error("no information on addScreenings");
     }
 
     const screenings = times.map((time, idx) => {
       return {
         movieId,
-        date,
-        time,
+        dateTime: time,
         seats: Array(100).fill({ id: idx + 1, status: SeatStatus.AVAILABLE }),
       };
     });

@@ -17,11 +17,7 @@ const ScreeningSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: MovieModel
   },
-  date: Date,
-  seats: {
-    type: []
-  }, 
-  time: String
+  dateTime: Date
 });
 
 export const ScreeningModel = mongoose.model("screenings", ScreeningSchema);
