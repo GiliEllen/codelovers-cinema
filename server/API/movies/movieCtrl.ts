@@ -23,11 +23,20 @@ export async function addMovie(req, res) {
   }
 }
 
-export async function getMovies(req, res) {
+export async function getMoviesAndScreenings(req, res) {
   try {
-    const moviesDB = await MovieModel.find({});
+    // const moviesDB = await MovieModel.find({});
 
-    res.send({ ok: true, moviesDB });
+    const moviesDB = await MovieModel.aggregate([{
+      $lookup: {
+        from: 'screenings',
+        localField: "_id",
+        foreignField: "movieId",
+        as: "screenings"
+      }
+    }])
+
+    res.send({ ok: true, message: moviesDB });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: error.message });

@@ -86,7 +86,6 @@ export const getUserByCookie = async (req: express.Request, res: express.Respons
     userDB.password = undefined;
     res.send({ userDB });
   } catch (error: any) {
-    console.error(error);
     res.status(500).send({ error: error.message });
   }
 };

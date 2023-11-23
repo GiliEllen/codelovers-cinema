@@ -13,6 +13,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import axios from 'axios'
 import { apiURL } from '../api/apiUrl'
 import EmptyImage from '../assets/203873-200.png'
+import { useNavigate } from 'react-router-dom'
 
 const AddMovie = () => {
   const [step, setStep] = useState(1)
@@ -27,6 +28,9 @@ const AddMovie = () => {
   const [time, setTime] = useState<string>()
   const [times, setTimes] = useState<any[]>([])
   const [image, setImage] = useState()
+  const [done, setDone] = useState(false)
+
+  const navigate = useNavigate()
 
   const handleChange = (panel: string) => (
     event: React.SyntheticEvent,
@@ -73,6 +77,9 @@ const AddMovie = () => {
       setScreeningDate('')
       setTime('')
       setTimes([])
+      setStep(3)
+      setDone(true)
+      setExpanded(false)
     }
   }
 
@@ -321,6 +328,25 @@ const AddMovie = () => {
           </Box>
         </AccordionDetails>
       </Accordion>
+      {done ? (
+        <>
+          <Button
+            onClick={() => {
+              setExpanded('panel2')
+              setDone(false)
+            }}
+          >
+            Add more screenings for this movie
+          </Button>
+          <Button
+            onClick={() => {
+              navigate('/')
+            }}
+          >
+            I'm done
+          </Button>
+        </>
+      ) : null}
     </Paper>
   )
 }
