@@ -17,16 +17,6 @@ interface Props {
 const MovieCard: FC<Props> = ({ movie }) => {
   const [datesArr, setDatesArr] = useState<Screenings[]>([])
 
-//   let findUniqeDates = () => {
-//     let unique_values = [
-//       ...new Set(movie.screenings.map((element) => element.dateTime.toString())),
-//     ]
-//     const arr = unique_values.map((value) => {
-//       return new Date(value)
-//     })
-//     setDatesArr(arr)
-//   }
-
 function filterUniqueDates(data:any) {
     const lookup = new Set();
     
@@ -42,7 +32,6 @@ function filterUniqueDates(data:any) {
         return true;
       }
     })
-    console.log(arr)
     setDatesArr(arr)
   }
 
