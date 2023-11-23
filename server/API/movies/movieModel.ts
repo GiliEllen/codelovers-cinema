@@ -4,7 +4,8 @@ import mongoose, { Schema } from "mongoose";
 const MovieSchema = new Schema({
   title: String,
   description: String,
-  duration: Number
+  duration: Number,
+  image:String
 });
 
 const MovieModel = mongoose.model("movies", MovieSchema);

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from 'cors';
+import bodyParser from 'body-parser';
 
 const app = express();
 
@@ -11,6 +12,7 @@ dotenv.config();
 const port = process.env.PORT;
 const mongodb_uri = process.env.MONGO_URI;
 
+app.use(bodyParser.json({limit: '10mb'}));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -25,14 +27,6 @@ mongoose
     console.log("At mongoose.connect:");
     console.error(err.message);
   });
-
-// const httpServer = require("http").createServer(app);
-// const options = {
-//   cors: {
-//     origin: "http://localhost:3000",
-//   },
-// };
-// const io = require("socket.io")(httpServer, options);
 
 const corsOptions = {
   origin: ['http://localhost:3000'],

@@ -12,9 +12,7 @@ import React, { useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import axios from 'axios'
 import { apiURL } from '../api/apiUrl'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { Dayjs } from 'dayjs'
-import { TimePicker } from '@mui/x-date-pickers'
+import EmptyImage from '../assets/203873-200.png'
 
 const AddMovie = () => {
   const [step, setStep] = useState(1)
@@ -28,6 +26,7 @@ const AddMovie = () => {
   const [screeningDate, setScreeningDate] = useState<string>()
   const [time, setTime] = useState<string>()
   const [times, setTimes] = useState<any[]>([])
+  const [image, setImage] = useState()
 
   const handleChange = (panel: string) => (
     event: React.SyntheticEvent,
@@ -48,12 +47,13 @@ const AddMovie = () => {
       ev.preventDefault()
       const { data } = await axios.post(
         `${apiURL}/api/movies`,
-        { movie },
+        { movie, image },
         { withCredentials: true }
       )
 
       if (data.ok) {
         setMovieId(data.message._id)
+        setExpanded('panel2')
         setStep(2)
       }
     } catch (error) {
@@ -61,27 +61,58 @@ const AddMovie = () => {
     }
   }
 
-  const handleAddScreenings = async (ev:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const {data} = await axios.post(`${apiURL}/api/movies/${movieId}`, {date: screeningDate, times})
+  const handleAddScreenings = async (
+    ev: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const { data } = await axios.post(`${apiURL}/api/movies/${movieId}`, {
+      date: screeningDate,
+      times,
+    })
     if (data.ok) {
-        console.log("successfully added screening")
-
+      console.log('successfully added screening')
+      setScreeningDate('')
+      setTime('')
+      setTimes([])
     }
   }
 
-//   const handleFilterTimeArray = (timeString: string) => {
-//     const hour = timeString.substring(0, 2)
-//     const minutes = timeString.substring(3, 5)
-//     const mappedTimes = times.map((timeInArr) => {
-//         const hourTimeInArr = Number(timeInArr.substring(0, 2))
-//         const minutestTimeInArr = Number(timeInArr.substring(3, 5))
-//         return {hour: hourTimeInArr, minutes: minutestTimeInArr}
-//     })
+  const convertIntoBase64 = (file: any) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(file)
+      fileReader.onload = () => {
+        console.log(fileReader.result)
+        resolve(fileReader.result)
+      }
+      fileReader.onerror = (error) => {
+        reject(error)
+      }
+    })
+  }
 
+  //   const handleFilterTimeArray = (timeString: string) => {
+  //     const hour = timeString.substring(0, 2)
+  //     const minutes = timeString.substring(3, 5)
+  //     const mappedTimes = times.map((timeInArr) => {
+  //         const hourTimeInArr = Number(timeInArr.substring(0, 2))
+  //         const minutestTimeInArr = Number(timeInArr.substring(3, 5))
+  //         return {hour: hourTimeInArr, minutes: minutestTimeInArr}
+  //     })
 
-//   }
+  //   }
 
-
+  const handleFileUpload = async (ev: any) => {
+    const file = ev.target.files[0]
+    console.log(file)
+    console.log(file.size / 1024 + 'kb')
+    console.log(file.size / 1024 / 1024 + 'mg')
+    //   if(file.size > 50833){
+    //     alert("File is too big!");
+    //  }
+    const base64 = await convertIntoBase64(file)
+    //@ts-ignore
+    setImage(base64)
+  }
 
   return (
     <Paper>
@@ -116,6 +147,29 @@ const AddMovie = () => {
               gap: '30px',
             }}
           >
+            {image ? (
+              <Typography>Image was successfully uploaded</Typography>
+            ) : (
+              <Typography>Upload Image</Typography>
+            )}
+            <label htmlFor="file-upload" style={{ width: '200px' }}>
+              <img
+                src={image ? image : EmptyImage}
+                alt="no image"
+                style={{ margin: 'auto', width: '100%' }}
+              />
+            </label>
+            <input
+              type="file"
+              aria-label="Image"
+              name="myFile"
+              id="file-upload"
+              accept=".jpeg, .png, .jpg"
+              onChange={(ev) => {
+                handleFileUpload(ev)
+              }}
+            />
+
             <TextField
               label="title"
               sx={{ width: '100%' }}
@@ -149,7 +203,7 @@ const AddMovie = () => {
         </AccordionDetails>
       </Accordion>
       <Accordion
-        //   disabled={step != 2}
+        // disabled={step != 2}
         expanded={expanded === 'panel2'}
         onChange={handleChange('panel2')}
       >
@@ -162,7 +216,10 @@ const AddMovie = () => {
             Add Screenings
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails
+          sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
+        >
+          <Typography>For movie: {movie.title}</Typography>
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               Insructions
@@ -179,59 +236,89 @@ const AddMovie = () => {
                 * If you wish to remove a screening time, click on it
               </Typography>
               <Typography>
-               * Notice that after saving a screening, you cannot update it.
+                * Notice that after saving a screening, you cannot update it.
               </Typography>
             </AccordionDetails>
           </Accordion>
 
-          <Typography>Choose a Date:</Typography>
-          <input
-            type="date"
-            id=""
-            value={screeningDate}
-            onChange={(ev) => setScreeningDate(ev.target.value)}
-          />
-          {screeningDate ? (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+              gap: '20px',
+            }}
+          >
             <Box>
-              <Typography>Choose Times:</Typography>
+              <Typography>Choose a Date:</Typography>
               <input
-                type="time"
+                type="date"
                 id=""
-                value={time}
-                onChange={(ev) => setTime(ev.target.value)}
+                value={screeningDate}
+                onChange={(ev) => setScreeningDate(ev.target.value)}
               />
-              <Button
-                onClick={(ev: any) => {
-                  setTimes([...times, time])
-                //   if (time) handleFilterTimeArray(time)
-                }}
-                variant="contained"
-              >
-                ADD
-              </Button>
-              <Box>
-                {times.map((timeBox, idx) => {
-                  return (
-                    <Paper
-                      onClick={(ev) => {
-                        setTimes(
-                          times.filter((screenTime, index) => {
-                            //@ts-ignore
-                            return index != ev.target.id
-                          })
-                        )
-                      }}
-                      key={`${screeningDate}-${timeBox}`}
-                      id={`${idx}`}
-                    >
-                      {timeBox}
-                    </Paper>
-                  )
-                })}
-              </Box>
-              <Button variant='contained' onClick={handleAddScreenings}>Add Screenings</Button>
             </Box>
-          ) : null}
+
+            {screeningDate ? (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-around',
+                  alignItems: 'center',
+                  gap: '20px',
+                }}
+              >
+                <Typography>Choose Times:</Typography>
+                <input
+                  type="time"
+                  id=""
+                  value={time}
+                  onChange={(ev) => setTime(ev.target.value)}
+                />
+                <Button
+                  onClick={(ev: any) => {
+                    setTimes([...times, time])
+                    //   if (time) handleFilterTimeArray(time)
+                  }}
+                  variant="contained"
+                >
+                  ADD
+                </Button>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                    alignItems: 'center',
+                    gap: '20px',
+                  }}
+                >
+                  {times.map((timeBox, idx) => {
+                    return (
+                      <Paper
+                        onClick={(ev) => {
+                          setTimes(
+                            times.filter((screenTime, index) => {
+                              //@ts-ignore
+                              return index != ev.target.id
+                            })
+                          )
+                        }}
+                        key={`${screeningDate}-${timeBox}`}
+                        id={`${idx}`}
+                      >
+                        {timeBox}
+                      </Paper>
+                    )
+                  })}
+                </Box>
+                <Button variant="contained" onClick={handleAddScreenings}>
+                  Add Screenings
+                </Button>
+              </Box>
+            ) : null}
+          </Box>
         </AccordionDetails>
       </Accordion>
     </Paper>

@@ -2,9 +2,9 @@ import MovieModel, { ScreeningModel, SeatStatus } from "./movieModel";
 
 export async function addMovie(req, res) {
   try {
-    const { movie } = req.body;
+    const { movie, image } = req.body;
     const { title, description, duration } = movie;
-    if (!title || !description || !duration) {
+    if (!title || !description || !duration || !image) {
       throw new Error("No information from client on addMovie");
     }
 
@@ -12,6 +12,7 @@ export async function addMovie(req, res) {
       title,
       description,
       duration,
+      image
     });
     if (!movieDB) throw new Error("no movieDB was created on addMovie");
 
