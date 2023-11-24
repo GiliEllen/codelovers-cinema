@@ -14,10 +14,13 @@ import axios from 'axios'
 import { apiURL } from '../api/apiUrl'
 import EmptyImage from '../assets/203873-200.png'
 import { useNavigate } from 'react-router-dom'
+import Instructions from './Instructions'
+import AddScreenings from './AddScreenings'
+import { Movie } from '../types/types'
 
 const AddMovie = () => {
   const [step, setStep] = useState(1)
-  const [movie, setMovie] = useState({
+  const [movie, setMovie] = useState<Movie>({
     title: '',
     duration: 90,
     description: '',
@@ -69,7 +72,7 @@ const AddMovie = () => {
     ev: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const { data } = await axios.post(`${apiURL}/api/movies/${movieId}`, {
-      times
+      times,
     })
     if (data.ok) {
       console.log('successfully added screening')
@@ -226,138 +229,16 @@ const AddMovie = () => {
           sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
         >
           <Typography>For movie: {movie.title}</Typography>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              Insructions
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography>To add screenings:</Typography>
-              <Typography>1. Choose a date</Typography>
-              <Typography>2. Choose a time and click add</Typography>
-              <Typography>
-                3. After picking all requested screenings Times, Click Save aat
-                the end.
-              </Typography>
-              <Typography>
-                * If you wish to remove a screening time, click on it
-              </Typography>
-              <Typography>
-                * Notice that after saving a screening, you cannot update it.
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              gap: '20px',
-            }}
-          >
-            <Box>
-              <Typography>Choose a Date:</Typography>
-              <input
-                type="date"
-                value={screeningDate}
-                onChange={(ev) => {
-                  setScreeningDate(ev.target.value)
-                }}
-              />
-            </Box>
-            {screeningDate ? <p>{JSON.stringify(screeningDate)}</p> : <p></p>}
-
-            {screeningDate ? (
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-around',
-                  alignItems: 'center',
-                  gap: '20px',
-                }}
-              >
-                <Typography>Choose Times:</Typography>
-                <input
-                  type="time"
-                  id=""
-                  value={time}
-                  onChange={(ev) => setTime(ev.target.value)}
-                />
-                <Button
-                  onClick={(ev: any) => {
-                    const newDate = new Date(screeningDate)
-                    if (time) {
-                      console.log(time)
-                      const hour = Number(time.substring(0, 2))
-                      const minutes = Number(time.substring(3, 5))
-                      newDate.setHours(hour)
-                      newDate.setMinutes(minutes)
-                      setTimes([...times, newDate])
-                      console.log(times)
-                    }
-
-                    //   if (time) handleFilterTimeArray(time)
-                  }}
-                  variant="contained"
-                >
-                  ADD
-                </Button>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-around',
-                    alignItems: 'center',
-                    gap: '20px',
-                  }}
-                >
-                  {times.map((timeBox, idx) => {
-                    return (
-                      <Paper
-                        onClick={(ev) => {
-                          setTimes(
-                            times.filter((screenTime, index) => {
-                              //@ts-ignore
-                              return index != ev.target.id
-                            })
-                          )
-                        }}
-                        key={`${screeningDate}-${timeBox}`}
-                        id={`${idx}`}
-                      >
-                        {`${timeBox.getHours()}:${timeBox.getMinutes()}`}
-                      </Paper>
-                    )
-                  })}
-                </Box>
-                <Button variant="contained" onClick={handleAddScreenings}>
-                  Add Screenings
-                </Button>
-              </Box>
-            ) : null}
-          </Box>
+          <AddScreenings movie={movie} movieId={movieId} />
         </AccordionDetails>
       </Accordion>
-      {done ? (
-        <>
-          <Button
-            onClick={() => {
-              setExpanded('panel2')
-              setDone(false)
-            }}
-          >
-            Add more screenings for this movie
-          </Button>
-          <Button
-            onClick={() => {
-              navigate('/')
-            }}
-          >
-            I'm done
-          </Button>
-        </>
-      ) : null}
+      <Button
+        onClick={() => {
+          navigate('/')
+        }}
+      >
+        I'm done
+      </Button>
     </Paper>
   )
 }

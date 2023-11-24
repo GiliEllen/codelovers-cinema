@@ -152,6 +152,7 @@ const OrderMovie = () => {
     setShowModalOrder(false)
     setShowModalError(false)
   }
+  
   const handleOrder = async () => {
     try {
       const {
@@ -170,7 +171,7 @@ const OrderMovie = () => {
 
   useEffect(() => {
     setScreeningToshow(
-      movie?.screenings.filter((screen) => {
+      movie?.screenings?.filter((screen) => {
         return screen._id === screeningToOrderId
       })[0]
     )
@@ -210,7 +211,7 @@ const OrderMovie = () => {
           <Select
             onChange={(ev: any) => setScreeningToOrderId(ev.target.value)}
           >
-            {movie?.screenings.map((screening) => {
+            {movie?.screenings?.map((screening) => {
               const newDate = new Date(screening.dateTime)
               return (
                 <MenuItem value={`${screening._id}`}>

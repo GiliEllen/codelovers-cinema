@@ -2,9 +2,9 @@ export interface Movie {
   title: string
   description: string
   duration: number
-  _id: string,
-  image: string,
-  screenings: Screenings[],
+  _id?: string,
+  image?: string,
+  screenings?: Screenings[],
   filtered? : boolean
 }
 

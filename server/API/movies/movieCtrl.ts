@@ -53,6 +53,42 @@ export async function getMovieAndScreeningsByID(req, res) {
     res.status(500).send({ error: error.message });
   }
 }
+
+export async function updateMovieById(req, res) {
+  try {
+    const { movie } = req.body;
+
+    if (!movie || !movie.title) {
+      throw new Error("missing info on updateMovieById");
+    }
+
+    const movieDB = await MovieModel.findByIdAndUpdate(movie._id, movie, {new: true})
+
+    const id = new mongoose.Types.ObjectId(movie._id);
+
+    const movieDBUpdated = await MovieModel.aggregate([
+      {
+        $match: {
+          _id: id,
+        },
+      },
+      {
+        $lookup: {
+          from: "screenings",
+          localField: "_id",
+          foreignField: "movieId",
+          as: "screenings",
+        },
+      },
+    ]);
+
+    res.send({ok: true, message: movieDBUpdated})
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: error.message });
+  }
+}
+
 export async function getMoviesAndScreenings(req, res) {
   try {
     // const moviesDB = await MovieModel.find({});
@@ -129,6 +165,24 @@ export async function updateScreening(req, res) {
     res.status(500).send({ error: error.message });
   }
 }
+export async function deleteScreeningById(req, res) {
+  try {
+
+    const { screeningId } = req.params;
+
+    if (!screeningId) {
+      throw new Error("no information on updateScreening");
+    }
+
+    let screeningsDB = await ScreeningModel.findByIdAndRemove(screeningId);
+
+    res.send({ ok: true, message: "Item Deleted succesfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: error.message });
+  }
+}
+
 export async function addScreening(req, res) {
   try {
     const { times } = req.body;
