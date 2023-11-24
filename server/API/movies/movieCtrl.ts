@@ -158,3 +158,24 @@ export async function addScreening(req, res) {
     res.status(500).send({ error: error.message });
   }
 }
+
+export async function getScreeningsByDate(req, res) {
+  try {
+    console.log("test");
+    const { startDate, endDate } = req.body;
+    if (!startDate || !endDate) {
+      throw new Error("no info on getScreeningsByDate");
+    }
+    const screeningsDB = await ScreeningModel.find({
+      $and: [
+        { dateTime: { $gte: startDate } },
+        { dateTime: { $lte: endDate } },
+      ],
+    }).populate("movieId");
+
+    res.send({ ok: true, message: screeningsDB });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: error.message });
+  }
+}

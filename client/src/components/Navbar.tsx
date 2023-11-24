@@ -16,8 +16,12 @@ import Button from '@mui/material/Button'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { logoutUser, userSelector } from './../features/loggedInUser/loggedInUser'
+import {
+  logoutUser,
+  userSelector,
+} from './../features/loggedInUser/loggedInUser'
 import LogoutIcon from '@mui/icons-material/Logout'
+import { UserRole } from '../features/loggedInUser/usersModel'
 interface Props {
   window?: () => Window
 }
@@ -54,7 +58,11 @@ export default function Navbar(props: Props) {
       {user ? (
         <>
           <Typography>Welcome back {user.firstName}!</Typography>
-          <IconButton onClick={() => {dispatch(logoutUser())}}>
+          <IconButton
+            onClick={() => {
+              dispatch(logoutUser())
+            }}
+          >
             <LogoutIcon />
           </IconButton>
         </>
@@ -105,7 +113,22 @@ export default function Navbar(props: Props) {
           {user ? (
             <>
               <Typography>Welcome back {user.firstName}!</Typography>
-              <IconButton onClick={() => {dispatch(logoutUser())}}>
+              {user.role == UserRole.ADMIN ? (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    navigate('/admin-page')
+                  }}
+                >
+                  Admin
+                </Button>
+              ) : null}
+              <IconButton
+                onClick={() => {
+                  dispatch(logoutUser())
+                }}
+              >
                 <LogoutIcon />
               </IconButton>
             </>

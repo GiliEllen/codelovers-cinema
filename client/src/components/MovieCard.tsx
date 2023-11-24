@@ -20,19 +20,19 @@ const MovieCard: FC<Props> = ({ movie }) => {
 
   const navigate = useNavigate()
 
-function filterUniqueDates(data:any) {
-    const lookup = new Set();
-    
-    const arr =  data.filter((date:Screenings) => {
-        let dateToCheck = new Date(date.dateTime)
-        dateToCheck.setMinutes(0)
-        dateToCheck.setHours(0)
-       const serialised = dateToCheck.getTime();
+  function filterUniqueDates(data: any) {
+    const lookup = new Set()
+
+    const arr = data.filter((date: Screenings) => {
+      let dateToCheck = new Date(date.dateTime)
+      dateToCheck.setMinutes(0)
+      dateToCheck.setHours(0)
+      const serialised = dateToCheck.getTime()
       if (lookup.has(serialised)) {
-        return false;
-      } else { 
-        lookup.add(serialised);
-        return true;
+        return false
+      } else {
+        lookup.add(serialised)
+        return true
       }
     })
     setDatesArr(arr)
@@ -41,7 +41,6 @@ function filterUniqueDates(data:any) {
   useEffect(() => {
     // findUniqeDates()
     filterUniqueDates(movie.screenings)
-    
   }, [])
   return (
     <Paper
@@ -71,16 +70,31 @@ function filterUniqueDates(data:any) {
             const newDate = new Date(date.dateTime)
             return (
               <Grid item>
-                <Chip
-                  color="primary"
-                  label={`${newDate.getDate()}.${newDate.getMonth() + 1}`}
-                />
+                {movie.filtered ? (
+                  <Chip
+                    color="primary"
+                    label={`${newDate.getDate()}.${newDate.getMonth() + 1} at ${
+                      newDate.getHours()
+                    }:${newDate.getMinutes()}`}
+                  />
+                ) : (
+                  <Chip
+                    color="primary"
+                    label={`${newDate.getDate()}.${newDate.getMonth() + 1}`}
+                  />
+                )}
+               
               </Grid>
             )
           })}
         </Grid>
         <Box>
-          <Button onClick={() => navigate(`/movie/${movie._id}`)} sx={{ alignSelf: 'center' }}>Order now</Button>
+          <Button
+            onClick={() => navigate(`/movie/${movie._id}`)}
+            sx={{ alignSelf: 'center' }}
+          >
+            Order now
+          </Button>
         </Box>
       </Stack>
     </Paper>

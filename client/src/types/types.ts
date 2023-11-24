@@ -4,12 +4,13 @@ export interface Movie {
   duration: number
   _id: string,
   image: string,
-  screenings: Screenings[]
+  screenings: Screenings[],
+  filtered? : boolean
 }
 
 export interface Screenings {
   _id: string,
-  movieId: string,
+  movieId: string | Movie,
   dateTime: Date,
   seats: [{
     id: number, status: string

@@ -1,6 +1,11 @@
 import Joi from "joi";
 import mongoose from "mongoose";
 
+enum UserRole {
+  ADMIN = "admin",
+  COSTUMER = "costumer"
+}
+
 const UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -12,8 +17,8 @@ const UserSchema = new mongoose.Schema({
   lastName: String,
   role: {
     type: String,
-    enum: ["ADMIN", "COSTUMER"],
-    default: "COSTUMER",
+    enum: UserRole,
+    default: UserRole.COSTUMER,
   },
 });
 
@@ -27,3 +32,4 @@ export const UserJoi = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 });
+

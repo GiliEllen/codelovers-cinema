@@ -35,30 +35,60 @@ export const Home: React.FC = () => {
     }
   }
 
-  const handleFilterMoviesByDate = () => {
+  // function filterUniqueMovies(data:any) {
+  //   const lookup = new Set();
+
+  //   const arr =  data.filter((screen:Screenings) => {
+  //     //@ts-ignore
+  //      const serialised = screen.movieId._id
+  //     if (lookup.has(serialised)) {
+  //       return false;
+  //     } else {
+  //       lookup.add(serialised);
+  //       return true;
+  //     }
+  //   })
+
+  // }
+
+  const handleFilterMoviesByDate = async () => {
     if (startingDate && endingDate) {
       const newStartingDate = new Date(startingDate)
       const newEndingDate = new Date(endingDate)
+      console.log(newEndingDate)
+      console.log(newStartingDate)
+      const { data } = await axios.post(
+        `${apiURL}/api/movies/screenings/find/by-date`,
+        {
+          startDate: newStartingDate,
+          endDate: newEndingDate,
+        }
+      )
 
-      setMoviesToDisplay(
-        movies.map((movie) => {
-          const arr = movie.screenings.filter((screening: Screenings) => {
-            if (
-              new Date(screening.dateTime).getTime() >=
-                newStartingDate.getTime() &&
-              new Date(screening.dateTime).getTime() <= newEndingDate.getTime()
-            ) {
-              return true
-            } else {
-              return false
+      console.log(data)
+
+      if (data.ok && data.message.length > 0) {
+        setMoviesToDisplay(
+          data.message.map((screening: Screenings) => {
+            return {
+              //@ts-ignore
+              title: screening.movieId.title,
+              //@ts-ignore
+              description: screening.movieId.description,
+              //@ts-ignore
+              duration: screening.movieId.duration,
+              //@ts-ignore
+              _id: screening.movieId._id,
+              //@ts-ignore
+              image: screening.movieId.image,
+              screenings: [screening],
+              filtered: true
             }
           })
-          console.log(arr)
-          if (arr.length > 0) {
-            return { ...movie, screenings: arr }
-          } 
-        })
-      )
+        )
+      } else {
+        console.log('somthing went wrong')
+      }
     }
   }
 
@@ -99,6 +129,9 @@ export const Home: React.FC = () => {
           <Button onClick={handleFilterMoviesByDate} variant="contained">
             Find
           </Button>
+          <Button onClick={getAllMovies} variant="contained">
+            reset
+          </Button>
         </form>
       </Paper>
       <Box>
@@ -109,8 +142,8 @@ export const Home: React.FC = () => {
         >
           {moviesToDisplay.length > 0 ? (
             <>
-              {moviesToDisplay.map((movie) => {
-                return <MovieCard key={movie._id} movie={movie} />
+              {moviesToDisplay.map((movie, idx) => {
+                return <MovieCard key={`${movie._id}-${idx}`} movie={movie} />
               })}
             </>
           ) : null}

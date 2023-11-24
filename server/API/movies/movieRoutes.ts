@@ -4,7 +4,8 @@ import {
   getMovieAndScreeningsByID,
   addMovie,
   addScreening,
-  updateScreening
+  updateScreening,
+  getScreeningsByDate
 } from "./movieCtrl";
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router
   .get("/:movieId", getMovieAndScreeningsByID)
   .post("", addMovie)
   .post("/:movieId", addScreening)
-  .post("/screenings/:screeningId", updateScreening);
+  .post("/screenings/:screeningId", updateScreening)
+  .post("/screenings/find/by-date", getScreeningsByDate);
 
 export default router;

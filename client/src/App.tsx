@@ -7,6 +7,8 @@ import { Box } from '@mui/material'
 import Login from './pages/Login'
 import AddMovie from './pages/AddMovie'
 import OrderMovie from './pages/OrderMovie'
+import Auth from './components/auth/Auth'
+import { UserRole } from './features/loggedInUser/usersModel'
 
 const App: React.FC = () => {
   return (
@@ -19,6 +21,9 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/add-movie" element={<AddMovie />} />
           <Route path="/movie/:movieId" element={<OrderMovie />} />
+          <Route element={<Auth allowedRoles={[UserRole.ADMIN]} />}>
+            <Route path="/admin-page" element={<p>Admin</p>}/>
+          </Route>
         </Routes>
       </Box>
     </BrowserRouter>
