@@ -17,6 +17,9 @@ import { useNavigate } from 'react-router-dom'
 import Instructions from './Instructions'
 import AddScreenings from './AddScreenings'
 import { Movie } from '../types/types'
+import { handleAddMovie } from '../api/moviesApi'
+import useToast from '../hooks/useToast'
+import Toast from './Toast'
 
 const AddMovie = () => {
   const [step, setStep] = useState(1)
@@ -30,8 +33,9 @@ const AddMovie = () => {
   const [screeningDate, setScreeningDate] = useState<string>()
   const [time, setTime] = useState<string>()
   const [times, setTimes] = useState<any[]>([])
-  const [image, setImage] = useState()
+  const [image, setImage] = useState<string>('')
   const [done, setDone] = useState(false)
+  const { open, setOpen, msg, setMsg, toastStatus, setToastStatus } = useToast()
 
   const navigate = useNavigate()
 
@@ -46,42 +50,26 @@ const AddMovie = () => {
     ev: React.FormEvent<HTMLDivElement>,
     key: string
   ) => {
-    //@ts-ignore
-    setMovie({ ...movie, [key]: ev.target.value })
+    setMovie({ ...movie, [key]: (ev.target as HTMLInputElement).value })
   }
-  const handleAddMovie = async (ev: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
     try {
       ev.preventDefault()
-      const { data } = await axios.post(
-        `${apiURL}/api/movies`,
-        { movie, image },
-        { withCredentials: true }
-      )
-
+      const data = await handleAddMovie(movie, image)
       if (data.ok) {
         setMovieId(data.message._id)
         setExpanded('panel2')
         setStep(2)
+        setMsg('Movie Added SuccessFully.')
+        setToastStatus('success')
+        setOpen(true)
       }
     } catch (error) {
       console.error(error)
-    }
-  }
-
-  const handleAddScreenings = async (
-    ev: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    const { data } = await axios.post(`${apiURL}/api/movies/${movieId}`, {
-      times,
-    })
-    if (data.ok) {
-      console.log('successfully added screening')
-      setScreeningDate('')
-      setTime('')
-      setTimes([])
-      setStep(3)
-      setDone(true)
-      setExpanded(false)
+      setMsg('Somthing Went Wrong. Please try again later.')
+      setToastStatus('error')
+      setOpen(true)
     }
   }
 
@@ -99,25 +87,8 @@ const AddMovie = () => {
     })
   }
 
-  //   const handleFilterTimeArray = (timeString: string) => {
-  //     const hour = timeString.substring(0, 2)
-  //     const minutes = timeString.substring(3, 5)
-  //     const mappedTimes = times.map((timeInArr) => {
-  //         const hourTimeInArr = Number(timeInArr.substring(0, 2))
-  //         const minutestTimeInArr = Number(timeInArr.substring(3, 5))
-  //         return {hour: hourTimeInArr, minutes: minutestTimeInArr}
-  //     })
-
-  //   }
-
   const handleFileUpload = async (ev: any) => {
     const file = ev.target.files[0]
-    console.log(file)
-    console.log(file.size / 1024 + 'kb')
-    console.log(file.size / 1024 / 1024 + 'mg')
-    //   if(file.size > 50833){
-    //     alert("File is too big!");
-    //  }
     const base64 = await convertIntoBase64(file)
     //@ts-ignore
     setImage(base64)
@@ -147,7 +118,7 @@ const AddMovie = () => {
           }}
         >
           <form
-            onSubmit={handleAddMovie}
+            onSubmit={handleSubmit}
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -239,6 +210,12 @@ const AddMovie = () => {
       >
         I'm done
       </Button>
+      <Toast
+        msg={msg}
+        status={toastStatus ? toastStatus : 'info'}
+        open={open}
+        setOpen={setOpen}
+      />
     </Paper>
   )
 }

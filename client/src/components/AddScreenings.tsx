@@ -1,36 +1,85 @@
 import React, { FC, useState } from 'react'
 import { Movie } from '../types/types'
 
-import { Typography, Button, Box, Paper } from '@mui/material'
+import {
+  Typography,
+  Button,
+  Box,
+  Paper,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material'
 import Instructions from './Instructions'
 import axios from 'axios'
 import { apiURL } from '../api/apiUrl'
 import moment from 'moment'
+import useToast from '../hooks/useToast'
+import Toast from './Toast'
+import { handleAddScreenings } from '../api/moviesApi'
 
 interface Props {
   movie: Movie
-  movieId? : string
+  movieId?: string
 }
 
 const AddScreenings: FC<Props> = ({ movie, movieId }) => {
   const [screeningDate, setScreeningDate] = useState<string>()
   const [time, setTime] = useState<string>()
   const [times, setTimes] = useState<any[]>([])
+  const [showDialog, setShowDialog] = useState<boolean>(false)
+  const [notAllowedDates, setNotAllowedDates] = useState<Date[]>([])
 
-  const handleAddScreenings = async (
-    ev: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    const { data } = await axios.post(`${apiURL}/api/movies/${movieId ? movieId : movie._id}`, {
-      times,
-    })
-    if (data.ok) {
-      console.log('successfully added screening')
-      setScreeningDate('')
-      setTime('')
-      setTimes([])
-      if (data.message.notAllowedDates.length > 0) {
-        console.log(data.message.notAllowedDates)
+  const { open, setOpen, msg, setMsg, toastStatus, setToastStatus } = useToast()
+  const handleClose = () => {
+    setShowDialog(false)
+  }
+
+  // const handleAddScreenings = async (
+  //   ev: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  // ) => {
+  //   const { data } = await axios.post(
+  //     `${apiURL}/api/movies/${movieId ? movieId : movie._id}`,
+  //     {
+  //       times,
+  //     }
+  //   )
+  //   if (data.ok) {
+  //     console.log('successfully added screening')
+  //     setScreeningDate('')
+  //     setTime('')
+  //     setTimes([])
+  //     if (data.message.notAllowedDates.length > 0) {
+  //       console.log(data.message.notAllowedDates)
+  //     }
+  //   }
+  // }
+
+  const handleSubmit = async () => {
+    try {
+      const data = await handleAddScreenings(movie, times, movieId)
+      if (!data.ok) {
+        console.log(data)
       }
+      if (data.ok) {
+        console.log('successfully added screening')
+        setScreeningDate('')
+        setTime('')
+        setTimes([])
+        if (data.message.added.length > 0) {
+          setMsg('Successfully added screenings!')
+          setToastStatus('success')
+          setOpen(true)
+        }
+        if (data.message.notAllowedDates.length > 0) {
+          setNotAllowedDates(data.message.notAllowedDates)
+          setShowDialog(true)
+        }
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -94,7 +143,8 @@ const AddScreenings: FC<Props> = ({ movie, movieId }) => {
           >
             {times.map((timeBox, idx) => {
               return (
-                <Paper sx={{padding: 1}}
+                <Paper
+                  sx={{ padding: 1 }}
                   onClick={(ev) => {
                     setTimes(
                       times.filter((screenTime, index) => {
@@ -106,16 +156,48 @@ const AddScreenings: FC<Props> = ({ movie, movieId }) => {
                   key={`${screeningDate}-${timeBox}`}
                   id={`${idx}`}
                 >
-                  {`${moment(timeBox).format("HH[:]mm")}`}
+                  {`${moment(timeBox).format('HH[:]mm')}`}
                 </Paper>
               )
             })}
           </Box>
-          <Button variant="contained" onClick={handleAddScreenings}>
+          <Button variant="contained" onClick={handleSubmit}>
             Add Screenings
           </Button>
         </Box>
       ) : null}
+      <Dialog
+        open={showDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Failed to schedule some of the screenings.
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            It seems that you tried to schedule a screening within 3 hours of an
+            existing one. This is the times that were failed to be scheduled:
+          </DialogContentText>
+          <ul>
+            {notAllowedDates.map((date) => {
+              return <li>{moment(date).format('lll')}</li>
+            })}
+          </ul>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} autoFocus>
+            I understand
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Toast
+        msg={msg}
+        status={toastStatus ? toastStatus : 'info'}
+        open={open}
+        setOpen={setOpen}
+      />
     </>
   )
 }

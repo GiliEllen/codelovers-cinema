@@ -217,8 +217,9 @@ export async function addScreening(req, res) {
         "hours"
       );
       let threeHoursAfter = moment(existingScreen.dateTime).add(3, "hours");
-
+      // 29.11 // 30.11 // 19.11
       const result2 = await times.map((newOptinalScreen) => {
+        //30.11 08:00
         let timeTocompare = moment(newOptinalScreen);
         let isOk = true;
         if (timeTocompare.isBetween(threeHoursBefore, threeHoursAfter)) {
@@ -229,7 +230,7 @@ export async function addScreening(req, res) {
           } else {
             notAllowedDates.push(newOptinalScreen);
           }
-          return;
+          // return;
         } else {
           console.log("ok to add");
         }
@@ -242,6 +243,16 @@ export async function addScreening(req, res) {
           }
         }
       });
+    });
+
+    allowedDates = await allowedDates.filter((allowedDate) => {
+      if (
+        notAllowedDates.some((notAllowedDate) => notAllowedDate == allowedDate)
+      ) {
+        return false;
+      } else {
+        return true;
+      }
     });
 
     let screenings = allowedDates.map((time, idx) => {
@@ -257,9 +268,9 @@ export async function addScreening(req, res) {
       });
       return { ...screen, seats: data };
     });
-    await ScreeningModel.insertMany(screeningsToInsert);
+    const added = await ScreeningModel.insertMany(screeningsToInsert);
     const allScreeningsDB = await ScreeningModel.find({ movieId });
-    res.send({ ok: true, message: { allScreeningsDB, notAllowedDates } });
+    res.send({ ok: true, message: { allScreeningsDB, notAllowedDates, added } });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: error.message });
