@@ -5,6 +5,7 @@ import { Typography, Button, Box, Paper } from '@mui/material'
 import Instructions from './Instructions'
 import axios from 'axios'
 import { apiURL } from '../api/apiUrl'
+import moment from 'moment'
 
 interface Props {
   movie: Movie
@@ -90,7 +91,7 @@ const AddScreenings: FC<Props> = ({ movie, movieId }) => {
           >
             {times.map((timeBox, idx) => {
               return (
-                <Paper
+                <Paper sx={{padding: 1}}
                   onClick={(ev) => {
                     setTimes(
                       times.filter((screenTime, index) => {
@@ -102,7 +103,7 @@ const AddScreenings: FC<Props> = ({ movie, movieId }) => {
                   key={`${screeningDate}-${timeBox}`}
                   id={`${idx}`}
                 >
-                  {`${timeBox.getHours()}:${timeBox.getMinutes()}`}
+                  {`${moment(timeBox).format("HH[:]mm")}`}
                 </Paper>
               )
             })}
