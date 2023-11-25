@@ -1,6 +1,4 @@
-import { motion } from 'framer-motion'
-import { FC, MutableRefObject, useEffect, useRef, useState } from 'react'
-import { Box } from '@mui/material'
+import { FC, useState } from 'react'
 
 interface CarouselProps {
   images: string[]
@@ -15,10 +13,10 @@ export const Carousel: FC<CarouselProps> = ({ images }) => {
       console.log(index)
       setIndex(0)
     } else if (index! > length) {
-      console.log("rnte 2 ")
+      console.log('rnte 2 ')
       setIndex(0)
     } else {
-      console.log("rnter 3" + index)
+      console.log('rnter 3' + index)
       setIndex((prevState) => prevState! + 1)
     }
   }
@@ -32,14 +30,14 @@ export const Carousel: FC<CarouselProps> = ({ images }) => {
         height: '250px',
       }}
     >
-      <button
-        onClick={() => {
+      <img
+        width={'100%'}
+        src={images[index]}
+        onMouseOver={() => {
           handleChangeIndex()
         }}
-      >
-        gygfysag
-      </button>
-      <img width={'100%'} src={images[index]} onMouseOver={() => {handleChangeIndex()}} alt="" />
+        alt="movie poster"
+      />
     </div>
   )
 }

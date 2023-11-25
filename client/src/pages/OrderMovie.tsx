@@ -21,6 +21,9 @@ import { Movie } from '../types/types'
 import ChairIcon from '@mui/icons-material/Chair'
 import { useAppSelector } from '../app/hooks'
 import { userSelector } from '../features/loggedInUser/loggedInUser'
+import moment from 'moment'
+import useToast from '../hooks/useToast'
+import Toast from '../components/Toast'
 
 const OrderMovie = () => {
   const [movie, setMovie] = useState<Movie>()
@@ -31,6 +34,10 @@ const OrderMovie = () => {
   const [showModalOrder, setShowModalOrder] = useState(false)
   const [showModalError, setShowModalError] = useState(false)
   const [email, setEmail] = useState<string>('')
+
+  //Toast related
+  const { open, setOpen, msg, setMsg, toastStatus, setToastStatus } = useToast()
+
   const { movieId } = useParams()
   const user = useAppSelector(userSelector)
   const navigate = useNavigate()
@@ -43,6 +50,9 @@ const OrderMovie = () => {
       }
     } catch (error) {
       console.error(error)
+      setMsg('Somthing Went Wrong. Please try again later.')
+      setToastStatus('error')
+      setOpen(true)
     }
   }
 
@@ -52,7 +62,6 @@ const OrderMovie = () => {
     )
 
     if (seatStatus && seatId == id) {
-      console.log(1)
       //Make avialable and reset seatId
       setSeatId(0)
       const {
@@ -64,16 +73,21 @@ const OrderMovie = () => {
       if (data.ok) {
         if (data.message.errorMsg) {
           console.log(data.message.errorMsg)
+          setMsg('Somthing Went Wrong. Please try agan later.')
+          setToastStatus('error')
+          setOpen(true)
         } else {
           handleGetMovie()
         }
       }
     } else if (seatStatus && seatId != id) {
-      console.log(2)
       console.log('already taken')
+      setMsg('This Sit Is Already Taken.')
+      setToastStatus('warning')
+      setOpen(true)
       return
     } else if (!seatStatus && seatId == id) {
-      console.log(3)
+      console.log("3")
       setSeatId(id)
       const {
         data,
@@ -82,9 +96,12 @@ const OrderMovie = () => {
         { chosenSeatId: id, update: 'pending' }
       )
       if (data.ok) {
-        console.log(data.message.errorMsg)
+
         if (data.message.errorMsg) {
           console.log(data.message.errorMsg)
+          setMsg('Somthing Went Wrong. Please try agan later.')
+          setToastStatus('error')
+          setOpen(true)
         } else {
           handleGetMovie()
         }
@@ -98,6 +115,9 @@ const OrderMovie = () => {
         { chosenSeatId: id, update: 'pending' }
       )
       if (data.ok) {
+        setMsg('Succssfully Saved This Seat!')
+        setToastStatus('success')
+        setOpen(true)
         if (data.message) {
           console.log(data.message)
         } else {
@@ -132,6 +152,9 @@ const OrderMovie = () => {
           setShowModalError(true)
         } else {
           setSeatId(id)
+          setMsg('Succssfully Saved This Seat!')
+          setToastStatus('success')
+          setOpen(true)
           handleGetMovie()
         }
       }
@@ -152,7 +175,7 @@ const OrderMovie = () => {
     setShowModalOrder(false)
     setShowModalError(false)
   }
-  
+
   const handleOrder = async () => {
     try {
       const {
@@ -162,10 +185,17 @@ const OrderMovie = () => {
         { chosenSeatId: seatId, update: 'taken' }
       )
       if (data.ok) {
-        navigate('/')
+        setMsg('Succssfully Ordered!')
+        setToastStatus('success')
+        setOpen(true)
+        setTimeout(() => {navigate('/')} ,2000)
+        
       }
     } catch (error) {
       console.error(error)
+      setMsg('Somthing Went Wrong. Please try agan later.')
+      setToastStatus('error')
+      setOpen(true)
     }
   }
 
@@ -209,15 +239,14 @@ const OrderMovie = () => {
           <Typography variant="h4">Order now</Typography>
           <Typography>Choose Time:</Typography>
           <Select
+            sx={{ width: '20rem' }}
             onChange={(ev: any) => setScreeningToOrderId(ev.target.value)}
           >
             {movie?.screenings?.map((screening) => {
-              const newDate = new Date(screening.dateTime)
+              const newDate = moment(screening.dateTime)
               return (
                 <MenuItem value={`${screening._id}`}>
-                  {`${newDate.getDate()}.${
-                    newDate.getMonth() + 1
-                  } at ${newDate.getHours()}:${newDate.getMinutes()}`}
+                  {`${moment(screening.dateTime).format('LLL')}`}
                 </MenuItem>
               )
             })}
@@ -317,6 +346,12 @@ const OrderMovie = () => {
           <Button onClick={handleClose}>OK</Button>
         </DialogActions>
       </Dialog>
+      <Toast
+        msg={msg}
+        status={toastStatus ? toastStatus : 'info'}
+        open={open}
+        setOpen={setOpen}
+      />
     </Box>
   )
 }

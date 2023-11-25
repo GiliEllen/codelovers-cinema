@@ -17,7 +17,7 @@ const Auth: FC<Props> = ({ allowedRoles }) => {
   ) : user?.firstName ? (
     <Navigate to="/unauthorized" state={{ from: location }} replace />
   ) : (
-    <Navigate to="/register" state={{ from: location }} replace />
+    <Navigate to="/login" state={{ from: location }} replace />
   )
 }
 

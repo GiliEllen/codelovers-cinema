@@ -20,7 +20,6 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/add-movie" element={<AddMovie />} />
           <Route path="/movie/:movieId" element={<OrderMovie />} />
           <Route element={<Auth allowedRoles={[UserRole.ADMIN]} />}>
             <Route path="/admin-page" element={<AdminPage />} />

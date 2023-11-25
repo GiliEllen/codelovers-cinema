@@ -5,6 +5,7 @@ import axios from 'axios'
 import { apiURL } from '../api/apiUrl'
 import { useNavigate } from 'react-router-dom'
 
+
 const Login = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -18,8 +19,9 @@ const Login = () => {
         `${apiURL}/api/users/login`,
         {
           email,
-          password
-        },  { withCredentials: true }
+          password,
+        },
+        { withCredentials: true }
       )
       if (data.ok) {
         navigate('/')
@@ -33,16 +35,26 @@ const Login = () => {
   }
 
   return (
-    <Box>
+    <Box
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center'
+      }}
+    >
       <Paper
         sx={{
-          width: '50%',
+          marginTop: 3,
+          width: '70%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          gap: '30px',
+          padding: 3,
+          height: 'fit-content',
         }}
       >
-        <Typography>Create your free account here:</Typography>
+        <Typography variant="h4">Log In Here:</Typography>
         <form
           onSubmit={handleSubmit}
           style={{
@@ -50,6 +62,7 @@ const Login = () => {
             flexDirection: 'column',
             width: '80%',
             alignItems: 'center',
+            gap: '30px',
           }}
         >
           <TextField
@@ -70,7 +83,7 @@ const Login = () => {
               setPassword((target as HTMLInputElement).value)
             }}
           />
-          <Button type="submit">Sign Up</Button>
+          <Button type="submit">LOG IN</Button>
         </form>
       </Paper>
     </Box>

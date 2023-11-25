@@ -112,7 +112,7 @@ export default function Navbar(props: Props) {
             Gili's cinema 🎬
           </Typography>
           {user ? (
-            <>
+            <Box sx={{display: "flex", alignItems: "center", gap: "10px"}}>
               <Typography>Welcome back {user.firstName}!</Typography>
               {user.role == UserRole.ADMIN ? (
                 <Button
@@ -132,7 +132,7 @@ export default function Navbar(props: Props) {
               >
                 <LogoutIcon />
               </IconButton>
-            </>
+            </Box>
           ) : (
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
               {navItems.map((item) => (

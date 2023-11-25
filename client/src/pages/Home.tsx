@@ -40,7 +40,7 @@ export const Home: React.FC = () => {
       }
     } catch (error) {
       console.error(error)
-      setMsg("Somthing Went Erong. Please try agan later.")
+      setMsg("Somthing Went Wrong. Please try again later.")
       setToastStatus('error')
       setOpen(true)
     }

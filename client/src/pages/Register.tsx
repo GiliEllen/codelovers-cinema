@@ -38,16 +38,18 @@ const Register = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{display: "flex", justifyContent: "center"}}>
       <Paper
         sx={{
-          width: '50%',
+          width: '80%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          gap: "30px",
+          padding: 3
         }}
       >
-        <Typography>Create your free account here:</Typography>
+        <Typography variant='h4'>Create your free account here:</Typography>
         <form
           onSubmit={handleSubmit}
           style={{
@@ -55,6 +57,7 @@ const Register = () => {
             flexDirection: 'column',
             width: '80%',
             alignItems: 'center',
+            gap: "30px"
           }}
         >
           <TextField
