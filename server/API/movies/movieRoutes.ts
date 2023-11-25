@@ -7,7 +7,8 @@ import {
   updateScreening,
   getScreeningsByDate,
   updateMovieById,
-  deleteScreeningById
+  deleteScreeningById,
+  deleteMovieWithScreenings
 } from "./movieCtrl";
 
 const router = express.Router();
@@ -21,5 +22,6 @@ router
   .post("/screenings/find/by-date", getScreeningsByDate)
   .patch("/:movieId", updateMovieById)
   .delete("/screenings/:screeningId", deleteScreeningById)
+  .delete("/:movieId", deleteMovieWithScreenings)
 
 export default router;

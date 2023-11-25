@@ -10,6 +10,7 @@ import {
 import MovieCreationIcon from '@mui/icons-material/MovieCreation'
 import AddMovie from '../components/AddMovie'
 import UpdateMovie from '../components/UpdateMovie'
+import DeleteMovie from '../components/DeleteMovie'
 
 const AdminPage = () => {
   const [page, setPage] = useState<string>('')
@@ -41,7 +42,7 @@ const AdminPage = () => {
       <Paper sx={{padding:3}}>
         {page === 'add' ? <AddMovie /> : null}
         {page === 'edit' ? <UpdateMovie/> : null}
-        {page === 'remove' ? <></> : null}
+        {page === 'remove' ? <DeleteMovie/> : null}
       </Paper>
     </Box>
   )

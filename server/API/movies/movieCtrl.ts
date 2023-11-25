@@ -111,6 +111,19 @@ export async function getMoviesAndScreenings(req, res) {
   }
 }
 
+export async function deleteMovieWithScreenings(req, res) {
+  try {
+    const movieDB = await MovieModel.deleteMany({ _id: req.params.movieId });
+    const screeningsDB = await ScreeningModel.deleteMany({
+      movieId: req.params.movieId,
+    });
+    
+    res.send({ ok: true, movieDB, screeningsDB });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: error.message });
+  }
+}
 export async function getMoviesByID(req, res) {
   try {
     const movieDB = await MovieModel.findById({ _id: req.params.movieId });

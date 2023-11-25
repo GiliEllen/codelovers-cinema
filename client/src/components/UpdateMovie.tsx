@@ -94,6 +94,7 @@ const UpdateMovie = () => {
       console.error(error)
     }
   }
+  
   const handleDeleteScreening = async (id: string) => {
     try {
       const { data } = await axios.delete(
