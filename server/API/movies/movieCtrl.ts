@@ -127,6 +127,7 @@ export async function deleteMovieWithScreenings(req, res) {
     res.status(500).send({ error: error.message });
   }
 }
+
 export async function getMoviesByID(req, res) {
   try {
     const movieDB = await MovieModel.findById({ _id: req.params.movieId });
@@ -181,6 +182,7 @@ export async function updateScreening(req, res) {
     res.status(500).send({ error: error.message });
   }
 }
+
 export async function deleteScreeningById(req, res) {
   try {
     const { screeningId } = req.params;
@@ -219,7 +221,6 @@ export async function addScreening(req, res) {
       let threeHoursAfter = moment(existingScreen.dateTime).add(3, "hours");
 
       const result2 = await times.map((newOptinalScreen) => {
-
         let timeTocompare = moment(newOptinalScreen);
         let isOk = true;
         if (timeTocompare.isBetween(threeHoursBefore, threeHoursAfter)) {
@@ -229,7 +230,7 @@ export async function addScreening(req, res) {
           } else {
             notAllowedDates.push(newOptinalScreen);
           }
-        } 
+        }
 
         if (isOk) {
           if (allowedDates.some((date) => date == newOptinalScreen)) {
@@ -266,7 +267,10 @@ export async function addScreening(req, res) {
     });
     const added = await ScreeningModel.insertMany(screeningsToInsert);
     const allScreeningsDB = await ScreeningModel.find({ movieId });
-    res.send({ ok: true, message: { allScreeningsDB, notAllowedDates, added } });
+    res.send({
+      ok: true,
+      message: { allScreeningsDB, notAllowedDates, added },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: error.message });
@@ -275,7 +279,6 @@ export async function addScreening(req, res) {
 
 export async function getScreeningsByDate(req, res) {
   try {
-    console.log("test");
     const { startDate, endDate } = req.body;
     if (!startDate || !endDate) {
       throw new Error("no info on getScreeningsByDate");
@@ -285,7 +288,9 @@ export async function getScreeningsByDate(req, res) {
         { dateTime: { $gte: startDate } },
         { dateTime: { $lte: endDate } },
       ],
-    }).populate("movieId");
+    })
+      .populate("movieId")
+      .sort({ dateTime: 1 });
 
     res.send({ ok: true, message: screeningsDB });
   } catch (error) {

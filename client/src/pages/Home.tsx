@@ -11,8 +11,7 @@ import Toast from '../components/Toast'
 import { AlertColor } from '@mui/material/Alert'
 import useToast from '../hooks/useToast'
 import { Carousel } from '../components/Carousel/Carousel'
-import { getAllMovies } from '../api/moviesApi'
-
+import { getAllMovies, handleFindMoviesByDate } from '../api/moviesApi'
 
 export const Home: React.FC = () => {
   const [movies, setMovies] = useState<any[]>([])
@@ -40,7 +39,7 @@ export const Home: React.FC = () => {
       }
     } catch (error) {
       console.error(error)
-      setMsg("Somthing Went Wrong. Please try again later.")
+      setMsg('Somthing Went Wrong. Please try again later.')
       setToastStatus('error')
       setOpen(true)
     }
@@ -50,13 +49,7 @@ export const Home: React.FC = () => {
     if (startingDate && endingDate) {
       const newStartingDate = new Date(startingDate)
       const newEndingDate = new Date(endingDate)
-      const { data } = await axios.post(
-        `${apiURL}/api/movies/screenings/find/by-date`,
-        {
-          startDate: newStartingDate,
-          endDate: newEndingDate,
-        }
-      )
+      const data = await handleFindMoviesByDate(newStartingDate, newEndingDate)
 
       if (data.ok && data.message.length > 0) {
         console.log(data.message)
@@ -95,12 +88,18 @@ export const Home: React.FC = () => {
 
   return (
     <Fragment>
-      <Carousel images={moviesPosters}/>
+      <Carousel images={moviesPosters} />
       {/* {moviesPosters.length > 0 ? <HoverCarousel imas={moviesPosters} /> : null} */}
       <Paper sx={{ padding: 3, marginTop: 36 }}>
         <Typography variant="h6">By Date:</Typography>
         <form style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-          <Box sx={{width: "15rem", display: "flex", justifyContent: "space-between"}}>
+          <Box
+            sx={{
+              width: '15rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
             <Box>
               <InputLabel>starting date</InputLabel>
               <input
@@ -122,7 +121,13 @@ export const Home: React.FC = () => {
               />
             </Box>
           </Box>
-          <Box sx={{width: "10rem", display: "flex", justifyContent: "space-between"}}>
+          <Box
+            sx={{
+              width: '10rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
             <Button onClick={handleFilterMoviesByDate} variant="contained">
               Find
             </Button>
@@ -132,16 +137,21 @@ export const Home: React.FC = () => {
           </Box>
         </form>
       </Paper>
-      <Box width={"90vw"} >
+      <Box width={'90vw'}>
         <Typography variant="h3">Screening Now:</Typography>
 
-        <Box
-          sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}
-        >
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
           {moviesToDisplay.length > 0 ? (
             <>
               {moviesToDisplay.map((movie, idx) => {
-                return <MovieCard key={`${movie._id}-${movie.screenings[0]._id}-${movie.filtered ? "F" : "N"}`} movie={movie} />
+                return (
+                  <MovieCard
+                    key={`${movie._id}-${movie.screenings[0]._id}-${
+                      movie.filtered ? 'F' : 'N'
+                    }`}
+                    movie={movie}
+                  />
+                )
               })}
             </>
           ) : null}

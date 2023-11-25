@@ -45,6 +45,20 @@ export const handleUpdateMovie = async (movie: Movie) => {
   }
 }
 
+export const handleFindMoviesByDate = async (
+  startDate: Date,
+  endDate: Date
+) => {
+  const { data } = await axios.post(
+    `${apiURL}/api/movies/screenings/find/by-date`,
+    {
+      startDate,
+      endDate,
+    }
+  )
+  return data
+}
+
 export const handleAddScreenings = async (
   movie: Movie,
   times: any[],

@@ -1,13 +1,5 @@
-import React, { useState } from 'react'
-import {
-  Box,
-  Stack,
-  ButtonGroup,
-  Paper,
-  Button,
-  Typography,
-} from '@mui/material'
-import MovieCreationIcon from '@mui/icons-material/MovieCreation'
+import { useState } from 'react'
+import { Box, ButtonGroup, Paper, Button } from '@mui/material'
 import AddMovie from '../components/AddMovie'
 import UpdateMovie from '../components/UpdateMovie'
 import DeleteMovie from '../components/DeleteMovie'
@@ -39,10 +31,10 @@ const AdminPage = () => {
           Delete Movie
         </Button>
       </ButtonGroup>
-      <Paper sx={{padding:3}}>
+      <Paper sx={{ padding: 3 }}>
         {page === 'add' ? <AddMovie /> : null}
-        {page === 'edit' ? <UpdateMovie/> : null}
-        {page === 'remove' ? <DeleteMovie/> : null}
+        {page === 'edit' ? <UpdateMovie /> : null}
+        {page === 'remove' ? <DeleteMovie /> : null}
       </Paper>
     </Box>
   )
