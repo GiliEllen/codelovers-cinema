@@ -62,7 +62,7 @@ export async function login(req: express.Request, res: express.Response) {
 
     const JWTCookie = jwt.encode(cookie, secret);
     userDB.password = undefined;
-    res.cookie("userID", JWTCookie, { maxAge: 50000,});
+    res.cookie("userID", JWTCookie, { maxAge: 50000});
     res.send({ ok: true, userDB });
   } catch (error: any) {
     res.status(500).send({ notOK: error.message });
@@ -79,6 +79,20 @@ export const getUserByCookie = async (req: express.Request, res: express.Respons
 
     const decodedUserId = jwt.decode(userID, secret);
     const { userId } = decodedUserId;
+
+    const userDB = await UserModel.findById(userId);
+    if (!userDB)
+      throw new Error(`Couldn't find user id with the id: ${userId}`);
+    userDB.password = undefined;
+    res.send({ userDB });
+  } catch (error: any) {
+    res.status(500).send({ error: error.message });
+  }
+};
+export const getUserById = async (req: express.Request, res: express.Response) => {
+  try {
+    const { userId } = req.params;
+    if (!userId) throw new Error("Couldn't find user from cookies");
 
     const userDB = await UserModel.findById(userId);
     if (!userDB)

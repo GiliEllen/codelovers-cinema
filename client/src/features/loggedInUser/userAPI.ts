@@ -8,13 +8,11 @@ export const login = createAsyncThunk(
   "api/user/login",
   async (_, thunkApi) => {
     try {
-      const { data } = await axios.get(`${apiURL}/api/users/get-user`, {withCredentials: true});
+      const userID = sessionStorage.getItem("userID")
+      const { data } = await axios.get(`${apiURL}/api/users/get-user/${userID}`, {withCredentials: true});
       const { userDB } = data;
 
       if (userDB) {
-        // navigate("/find-mentor");
-        // const { error } = UserJoi.validate(user);
-        // if (error) throw error;
         return userDB;
       }
     } catch (error:any) {

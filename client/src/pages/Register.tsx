@@ -28,6 +28,8 @@ const Register = () => {
           setMsg('Registered successfully!')
           setToastStatus('success')
           setOpen(true)
+          // for onRender.com, which does not allow cookies
+          sessionStorage.setItem("userID", data.userDB._id)
           setTimeout(() => {
             navigate('/')
           }, 2000)

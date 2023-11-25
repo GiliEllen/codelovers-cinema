@@ -1,12 +1,13 @@
 import express from "express";
-import { register, login, getUserByCookie, logout } from "./userCtrl";
+import { register, login, getUserByCookie, logout, getUserById } from "./userCtrl";
 
 const router = express.Router();
 
 router
-  .post("/register", register)
-  .post("/login", login)
   .get("/get-user", getUserByCookie)
-  .get("/logout", logout);
+  .get("/get-user/:userId", getUserById)
+  .get("/logout", logout)
+  .post("/register", register)
+  .post("/login", login);
 
 export default router;
