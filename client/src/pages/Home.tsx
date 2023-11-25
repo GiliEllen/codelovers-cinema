@@ -70,6 +70,9 @@ export const Home: React.FC = () => {
         )
       } else {
         console.log('somthing went wrong')
+        setMsg('Somthing Went Wrong. Please try again later.')
+        setToastStatus('error')
+        setOpen(true)
       }
     }
   }

@@ -4,6 +4,9 @@ import { Button } from '@mui/material'
 import axios from 'axios'
 import { apiURL } from '../api/apiUrl'
 import { useNavigate } from 'react-router-dom'
+import { handleRegister } from '../api/authApi'
+import useToast from '../hooks/useToast'
+import Toast from '../components/Toast'
 
 const Register = () => {
   const [email, setEmail] = useState<string>('')
@@ -12,44 +15,49 @@ const Register = () => {
   const [password, setPassword] = useState<string>('')
   const [repeatPassword, setRepeatPassword] = useState<string>('')
 
-    const navigate = useNavigate()
+  const { open, setOpen, msg, setMsg, toastStatus, setToastStatus } = useToast()
+
+  const navigate = useNavigate()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     try {
       if (password === repeatPassword) {
-        const { data } = await axios.post(`${apiURL}/api/users/register`, {
-          email,
-          password,
-          firstName,
-          lastName,
-        }, { withCredentials: true })
+        const data = await handleRegister(email, password, firstName, lastName)
         if (data.ok) {
-            navigate("/")
-        } else {
-            console.log("somthing went wrong")
+          setMsg('Registered successfully!')
+          setToastStatus('success')
+          setOpen(true)
+          setTimeout(() => {
+            navigate('/')
+          }, 2000)
         }
       } else {
-        console.log('not the same password')
+        setMsg('Passwords are not the same.')
+        setToastStatus('error')
+        setOpen(true)
       }
     } catch (error) {
       console.error(error)
+      setMsg('Something went wrong. Please try again later')
+      setToastStatus('error')
+      setOpen(true)
     }
   }
 
   return (
-    <Box sx={{display: "flex", justifyContent: "center"}}>
+    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <Paper
         sx={{
           width: '80%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: "30px",
-          padding: 3
+          gap: '30px',
+          padding: 3,
         }}
       >
-        <Typography variant='h4'>Create your free account here:</Typography>
+        <Typography variant="h4">Create your free account here:</Typography>
         <form
           onSubmit={handleSubmit}
           style={{
@@ -57,7 +65,7 @@ const Register = () => {
             flexDirection: 'column',
             width: '80%',
             alignItems: 'center',
-            gap: "30px"
+            gap: '30px',
           }}
         >
           <TextField
@@ -106,6 +114,12 @@ const Register = () => {
           <Button type="submit">Sign Up</Button>
         </form>
       </Paper>
+      <Toast
+        msg={msg}
+        status={toastStatus ? toastStatus : 'info'}
+        open={open}
+        setOpen={setOpen}
+      />
     </Box>
   )
 }

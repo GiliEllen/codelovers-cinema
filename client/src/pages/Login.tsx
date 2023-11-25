@@ -1,36 +1,35 @@
 import { Box, TextField, Typography, Paper } from '@mui/material'
 import React, { useState } from 'react'
 import { Button } from '@mui/material'
-import axios from 'axios'
-import { apiURL } from '../api/apiUrl'
 import { useNavigate } from 'react-router-dom'
-
+import { handleLogin } from '../api/authApi'
+import useToast from '../hooks/useToast'
+import Toast from '../components/Toast'
 
 const Login = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const { open, setOpen, msg, setMsg, toastStatus, setToastStatus } = useToast()
 
   const navigate = useNavigate()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     try {
-      const { data } = await axios.post(
-        `${apiURL}/api/users/login`,
-        {
-          email,
-          password,
-        },
-        { withCredentials: true }
-      )
+      const data = await handleLogin(email, password)
       if (data.ok) {
-        navigate('/')
-      } else {
-        console.log(data)
-        console.log('somthing went wrong')
+        setMsg('Logged In successfully!')
+        setToastStatus('success')
+        setOpen(true)
+        setTimeout(() => {
+          navigate('/')
+        }, 2000)
       }
     } catch (error) {
       console.error(error)
+      setMsg('Somthing Went Wrong. Please try again later.')
+      setToastStatus('error')
+      setOpen(true)
     }
   }
 
@@ -39,7 +38,7 @@ const Login = () => {
       sx={{
         height: '100vh',
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'center',
       }}
     >
       <Paper
@@ -86,6 +85,12 @@ const Login = () => {
           <Button type="submit">LOG IN</Button>
         </form>
       </Paper>
+      <Toast
+        msg={msg}
+        status={toastStatus ? toastStatus : 'info'}
+        open={open}
+        setOpen={setOpen}
+      />
     </Box>
   )
 }
