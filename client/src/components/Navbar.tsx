@@ -104,6 +104,7 @@ export default function Navbar(props: Props) {
             <MenuIcon />
           </IconButton>
           <Typography
+            onClick={() => navigate('/')}
             variant="h6"
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}

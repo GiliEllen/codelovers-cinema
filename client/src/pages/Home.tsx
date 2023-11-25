@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Paper } from '@mui/material'
+import { Box, Typography, Button, Paper, InputLabel } from '@mui/material'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useAppDispatch } from '../app/hooks'
 import { login } from '../features/loggedInUser/userAPI'
@@ -7,6 +7,11 @@ import { apiURL } from '../api/apiUrl'
 import MovieCard from '../components/MovieCard'
 // import HoverCarousel from 'hover-carousel'
 import { Movie, Screenings } from '../types/types'
+import Toast from '../components/Toast'
+import { AlertColor } from '@mui/material/Alert'
+import useToast from '../hooks/useToast'
+import { Carousel } from '../components/Carousel/Carousel'
+
 
 export const Home: React.FC = () => {
   const [movies, setMovies] = useState<any[]>([])
@@ -15,6 +20,9 @@ export const Home: React.FC = () => {
 
   const [startingDate, setStartingDate] = useState<string>()
   const [endingDate, setEndingDate] = useState<string>()
+
+  //Toast related
+  const { open, setOpen, msg, setMsg, toastStatus, setToastStatus } = useToast()
 
   const dispatch = useAppDispatch()
 
@@ -32,31 +40,16 @@ export const Home: React.FC = () => {
       }
     } catch (error) {
       console.error(error)
+      setMsg("Somthing Went Erong. Please try agan later.")
+      setToastStatus('error')
+      setOpen(true)
     }
   }
-
-  // function filterUniqueMovies(data:any) {
-  //   const lookup = new Set();
-
-  //   const arr =  data.filter((screen:Screenings) => {
-  //     //@ts-ignore
-  //      const serialised = screen.movieId._id
-  //     if (lookup.has(serialised)) {
-  //       return false;
-  //     } else {
-  //       lookup.add(serialised);
-  //       return true;
-  //     }
-  //   })
-
-  // }
 
   const handleFilterMoviesByDate = async () => {
     if (startingDate && endingDate) {
       const newStartingDate = new Date(startingDate)
       const newEndingDate = new Date(endingDate)
-      console.log(newEndingDate)
-      console.log(newStartingDate)
       const { data } = await axios.post(
         `${apiURL}/api/movies/screenings/find/by-date`,
         {
@@ -65,24 +58,19 @@ export const Home: React.FC = () => {
         }
       )
 
-      console.log(data)
-
       if (data.ok && data.message.length > 0) {
         setMoviesToDisplay(
           data.message.map((screening: Screenings) => {
-            return {
-              //@ts-ignore
-              title: screening.movieId.title,
-              //@ts-ignore
-              description: screening.movieId.description,
-              //@ts-ignore
-              duration: screening.movieId.duration,
-              //@ts-ignore
-              _id: screening.movieId._id,
-              //@ts-ignore
-              image: screening.movieId.image,
-              screenings: [screening],
-              filtered: true
+            if (typeof screening.movieId != 'string') {
+              return {
+                title: screening.movieId.title,
+                description: screening.movieId.description,
+                duration: screening.movieId.duration,
+                _id: screening.movieId._id,
+                image: screening.movieId.image,
+                screenings: [screening],
+                filtered: true,
+              }
             }
           })
         )
@@ -106,39 +94,48 @@ export const Home: React.FC = () => {
 
   return (
     <Fragment>
+      <Carousel images={moviesPosters}/>
       {/* {moviesPosters.length > 0 ? <HoverCarousel imas={moviesPosters} /> : null} */}
-      <Paper>
+      <Paper sx={{ padding: 3, marginTop: 36 }}>
         <Typography variant="h6">By Date:</Typography>
-        <form>
-          <label>starting date</label>
-          <input
-            type="date"
-            value={startingDate}
-            onChange={(ev) => {
-              setStartingDate(ev.target.value)
-            }}
-          />
-          <label>until date:</label>
-          <input
-            type="date"
-            value={endingDate}
-            onChange={(ev) => {
-              setEndingDate(ev.target.value)
-            }}
-          ></input>
-          <Button onClick={handleFilterMoviesByDate} variant="contained">
-            Find
-          </Button>
-          <Button onClick={getAllMovies} variant="contained">
-            reset
-          </Button>
+        <form style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+          <Box sx={{width: "15rem", display: "flex", justifyContent: "space-between"}}>
+            <Box>
+              <InputLabel>starting date</InputLabel>
+              <input
+                type="date"
+                value={startingDate}
+                onChange={(ev) => {
+                  setStartingDate(ev.target.value)
+                }}
+              />
+            </Box>
+            <Box>
+              <InputLabel>until date:</InputLabel>
+              <input
+                type="date"
+                value={endingDate}
+                onChange={(ev) => {
+                  setEndingDate(ev.target.value)
+                }}
+              />
+            </Box>
+          </Box>
+          <Box sx={{width: "10rem", display: "flex", justifyContent: "space-between"}}>
+            <Button onClick={handleFilterMoviesByDate} variant="contained">
+              Find
+            </Button>
+            <Button onClick={getAllMovies} variant="contained">
+              reset
+            </Button>
+          </Box>
         </form>
       </Paper>
-      <Box>
+      <Box width={"90vw"} >
         <Typography variant="h3">Screening Now:</Typography>
 
         <Box
-          sx={{ display: 'flex', gap: 3, width: '90vw', overflowX: 'scroll' }}
+          sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}
         >
           {moviesToDisplay.length > 0 ? (
             <>
@@ -149,6 +146,12 @@ export const Home: React.FC = () => {
           ) : null}
         </Box>
       </Box>
+      <Toast
+        msg={msg}
+        status={toastStatus ? toastStatus : 'info'}
+        open={open}
+        setOpen={setOpen}
+      />
     </Fragment>
   )
 }
