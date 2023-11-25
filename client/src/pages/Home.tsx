@@ -11,6 +11,7 @@ import Toast from '../components/Toast'
 import { AlertColor } from '@mui/material/Alert'
 import useToast from '../hooks/useToast'
 import { Carousel } from '../components/Carousel/Carousel'
+import { getAllMovies } from '../api/moviesApi'
 
 
 export const Home: React.FC = () => {
@@ -26,10 +27,9 @@ export const Home: React.FC = () => {
 
   const dispatch = useAppDispatch()
 
-  const getAllMovies = async () => {
+  const getMovies = async () => {
     try {
-      const { data } = await axios.get(`${apiURL}/api/movies`)
-      console.log(data)
+      const data = await getAllMovies()
       if (data.ok) {
         setMovies(data.message)
         setMoviesPosters(
@@ -59,6 +59,7 @@ export const Home: React.FC = () => {
       )
 
       if (data.ok && data.message.length > 0) {
+        console.log(data.message)
         setMoviesToDisplay(
           data.message.map((screening: Screenings) => {
             if (typeof screening.movieId != 'string') {
@@ -85,7 +86,7 @@ export const Home: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    getAllMovies()
+    getMovies()
   }, [])
 
   useEffect(() => {
@@ -125,7 +126,7 @@ export const Home: React.FC = () => {
             <Button onClick={handleFilterMoviesByDate} variant="contained">
               Find
             </Button>
-            <Button onClick={getAllMovies} variant="contained">
+            <Button onClick={getMovies} variant="contained">
               reset
             </Button>
           </Box>
@@ -140,7 +141,7 @@ export const Home: React.FC = () => {
           {moviesToDisplay.length > 0 ? (
             <>
               {moviesToDisplay.map((movie, idx) => {
-                return <MovieCard key={`${movie._id}-${idx}`} movie={movie} />
+                return <MovieCard key={`${movie._id}-${movie.screenings[0]._id}-${movie.filtered ? "F" : "N"}`} movie={movie} />
               })}
             </>
           ) : null}

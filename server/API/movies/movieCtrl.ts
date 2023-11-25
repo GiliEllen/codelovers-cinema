@@ -217,23 +217,19 @@ export async function addScreening(req, res) {
         "hours"
       );
       let threeHoursAfter = moment(existingScreen.dateTime).add(3, "hours");
-      // 29.11 // 30.11 // 19.11
+
       const result2 = await times.map((newOptinalScreen) => {
-        //30.11 08:00
+
         let timeTocompare = moment(newOptinalScreen);
         let isOk = true;
         if (timeTocompare.isBetween(threeHoursBefore, threeHoursAfter)) {
-          console.log("this is in the middle");
           isOk = false;
           if (notAllowedDates.some((date) => date == newOptinalScreen)) {
             return;
           } else {
             notAllowedDates.push(newOptinalScreen);
           }
-          // return;
-        } else {
-          console.log("ok to add");
-        }
+        } 
 
         if (isOk) {
           if (allowedDates.some((date) => date == newOptinalScreen)) {

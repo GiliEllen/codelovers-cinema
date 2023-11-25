@@ -13,16 +13,20 @@ import {
 import { Movie } from '../types/types'
 import axios from 'axios'
 import { apiURL } from '../api/apiUrl'
+import { getAllMovies, handleDeleteMovie } from '../api/moviesApi'
+import useToast from '../hooks/useToast'
+import Toast from './Toast'
 
 const DeleteMovie = () => {
   const [movies, setMovies] = useState<Movie[]>([])
   const [movieIdx, setMovieIdx] = useState<number>()
   const [chosenMovie, setChosenMovie] = useState<Movie>()
+  const { open, setOpen, msg, setMsg, toastStatus, setToastStatus } = useToast()
 
-  const getAllMovies = async () => {
+
+  const getMovies = async () => {
     try {
-      const { data } = await axios.get(`${apiURL}/api/movies`)
-      console.log(data)
+      const data  = await getAllMovies()
       if (data.ok) {
         setMovies(data.message)
       }
@@ -32,22 +36,28 @@ const DeleteMovie = () => {
   }
 
   useEffect(() => {
-    getAllMovies()
+    getMovies()
   }, [])
 
-  const handleDeleteMovie = async () => {
+  const handleDelete = async () => {
     try {
-      const { data } = await axios.delete(
-        `${apiURL}/api/movies/${chosenMovie?._id}`
-      )
-      if (data.ok) {
-        console.log(data)
-        setMovies(movies.filter((movie) => movie._id != chosenMovie?._id))
-        setChosenMovie(undefined)
-        setMovieIdx(undefined)
+      if (chosenMovie) {
+        const data = await handleDeleteMovie(chosenMovie)
+        if (data.ok) {
+          console.log(data)
+          setMovies(movies.filter((movie) => movie._id != chosenMovie?._id))
+          setChosenMovie(undefined)
+          setMovieIdx(undefined)
+          setMsg('Movie Deleted SuccessFully.')
+          setToastStatus('success')
+          setOpen(true)
+        }
       }
     } catch (error) {
       console.error(error)
+      setMsg('Somthing Went Wrong. Please try again later.')
+      setToastStatus('error')
+      setOpen(true)
     }
   }
 
@@ -93,7 +103,7 @@ const DeleteMovie = () => {
           irreversable.
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDeleteMovie}>delete</Button>
+          <Button onClick={handleDelete}>delete</Button>
           <Button
             onClick={() => {
               setChosenMovie(undefined)
@@ -104,6 +114,12 @@ const DeleteMovie = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Toast
+        msg={msg}
+        status={toastStatus ? toastStatus : 'info'}
+        open={open}
+        setOpen={setOpen}
+      />
     </Box>
   )
 }

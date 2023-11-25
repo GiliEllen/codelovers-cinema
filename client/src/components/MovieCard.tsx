@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import { Movie, Screenings } from '../types/types'
 import { useNavigate } from 'react-router-dom'
+import moment from 'moment'
 
 interface Props {
   movie: Movie
@@ -39,7 +40,6 @@ const MovieCard: FC<Props> = ({ movie }) => {
   }
 
   useEffect(() => {
-    // findUniqeDates()
     filterUniqueDates(movie.screenings)
   }, [])
   return (
@@ -67,23 +67,20 @@ const MovieCard: FC<Props> = ({ movie }) => {
         <Typography>Showing on:</Typography>
         <Grid container spacing={1} direction={'row'}>
           {datesArr.map((date) => {
-            const newDate = new Date(date.dateTime)
             return (
               <Grid item>
                 {movie.filtered ? (
                   <Chip
                     color="primary"
-                    label={`${newDate.getDate()}.${newDate.getMonth() + 1} at ${
-                      newDate.getHours()
-                    }:${newDate.getMinutes()}`}
+                    label={`${moment(date.dateTime).format("D[.]MM  [at] LT")}`}
+
                   />
                 ) : (
                   <Chip
                     color="primary"
-                    label={`${newDate.getDate()}.${newDate.getMonth() + 1}`}
+                    label={`${moment(date.dateTime).format("D[.]MM")}`}
                   />
                 )}
-               
               </Grid>
             )
           })}
