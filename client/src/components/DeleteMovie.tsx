@@ -44,6 +44,7 @@ const DeleteMovie = () => {
         console.log(data)
         setMovies(movies.filter((movie) => movie._id != chosenMovie?._id))
         setChosenMovie(undefined)
+        setMovieIdx(undefined)
       }
     } catch (error) {
       console.error(error)

@@ -1,3 +1,4 @@
+import moment from "moment";
 import MovieModel, { ScreeningModel, Seat, SeatStatus } from "./movieModel";
 import mongoose from "mongoose";
 
@@ -62,7 +63,9 @@ export async function updateMovieById(req, res) {
       throw new Error("missing info on updateMovieById");
     }
 
-    const movieDB = await MovieModel.findByIdAndUpdate(movie._id, movie, {new: true})
+    const movieDB = await MovieModel.findByIdAndUpdate(movie._id, movie, {
+      new: true,
+    });
 
     const id = new mongoose.Types.ObjectId(movie._id);
 
@@ -82,7 +85,7 @@ export async function updateMovieById(req, res) {
       },
     ]);
 
-    res.send({ok: true, message: movieDBUpdated})
+    res.send({ ok: true, message: movieDBUpdated });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: error.message });
@@ -117,7 +120,7 @@ export async function deleteMovieWithScreenings(req, res) {
     const screeningsDB = await ScreeningModel.deleteMany({
       movieId: req.params.movieId,
     });
-    
+
     res.send({ ok: true, movieDB, screeningsDB });
   } catch (error) {
     console.error(error);
@@ -180,7 +183,6 @@ export async function updateScreening(req, res) {
 }
 export async function deleteScreeningById(req, res) {
   try {
-
     const { screeningId } = req.params;
 
     if (!screeningId) {
@@ -204,7 +206,45 @@ export async function addScreening(req, res) {
       throw new Error("no information on addScreenings");
     }
 
-    let screenings = times.map((time, idx) => {
+    const existingScreeningsDB = await ScreeningModel.find({});
+
+    let notAllowedDates = [];
+    let allowedDates = [];
+
+    await existingScreeningsDB.forEach(async (existingScreen) => {
+      let threeHoursBefore = moment(existingScreen.dateTime).subtract(
+        3,
+        "hours"
+      );
+      let threeHoursAfter = moment(existingScreen.dateTime).add(3, "hours");
+
+      const result2 = await times.map((newOptinalScreen) => {
+        let timeTocompare = moment(newOptinalScreen);
+        let isOk = true;
+        if (timeTocompare.isBetween(threeHoursBefore, threeHoursAfter)) {
+          console.log("this is in the middle");
+          isOk = false;
+          if (notAllowedDates.some((date) => date == newOptinalScreen)) {
+            return;
+          } else {
+            notAllowedDates.push(newOptinalScreen);
+          }
+          return;
+        } else {
+          console.log("ok to add");
+        }
+
+        if (isOk) {
+          if (allowedDates.some((date) => date == newOptinalScreen)) {
+            return;
+          } else {
+            allowedDates.push(newOptinalScreen);
+          }
+        }
+      });
+    });
+
+    let screenings = allowedDates.map((time, idx) => {
       return {
         movieId,
         dateTime: time,
@@ -219,7 +259,7 @@ export async function addScreening(req, res) {
     });
     await ScreeningModel.insertMany(screeningsToInsert);
     const allScreeningsDB = await ScreeningModel.find({ movieId });
-    res.send({ ok: true, message: allScreeningsDB });
+    res.send({ ok: true, message: { allScreeningsDB, notAllowedDates } });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: error.message });

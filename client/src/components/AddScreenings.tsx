@@ -28,6 +28,9 @@ const AddScreenings: FC<Props> = ({ movie, movieId }) => {
       setScreeningDate('')
       setTime('')
       setTimes([])
+      if (data.message.notAllowedDates.length > 0) {
+        console.log(data.message.notAllowedDates)
+      }
     }
   }
 
