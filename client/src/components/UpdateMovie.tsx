@@ -19,6 +19,9 @@ import { Movie, Screenings } from '../types/types'
 import moment from 'moment'
 import AddScreenings from './AddScreenings'
 import { useNavigate } from 'react-router-dom'
+import { handleDeleteScreening, handleUpdateMovie } from '../api/moviesApi'
+import Toast from './Toast'
+import useToast from '../hooks/useToast'
 
 const UpdateMovie = () => {
   const [movies, setMovies] = useState<any[]>([])
@@ -34,6 +37,7 @@ const UpdateMovie = () => {
 
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set<number>())
+  const { open, setOpen, msg, setMsg, toastStatus, setToastStatus } = useToast()
 
   const navigate = useNavigate()
 
@@ -78,36 +82,38 @@ const UpdateMovie = () => {
     setSkipped(newSkipped)
   }
 
-  const handleUpdateMovie = async () => {
+  const updateMovie = async () => {
     try {
-      const { data } = await axios.patch(
-        `${apiURL}/api/movies/${chosenMovie._id}`,
-        {
-          movie: chosenMovie,
-        }
-      )
-
+      const data = await handleUpdateMovie(chosenMovie)
       if (data.ok) {
-        navigate("/")
+        setMsg('Movie Updated SuccessFully.')
+        setToastStatus('success')
+        setOpen(true)
+        setTimeout(() => {
+          navigate('/')
+        }, 2000)
       }
     } catch (error) {
       console.error(error)
+      setMsg('Somthing Went Wrong. Please try again later.')
+      setToastStatus('error')
+      setOpen(true)
     }
   }
-  
-  const handleDeleteScreening = async (id: string) => {
-    try {
-      const { data } = await axios.delete(
-        `${apiURL}/api/movies/screenings/${id}`
-      )
 
-      if (data.ok) {
-        console.log(data)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  // const handleDeleteScreening = async (id: string) => {
+  //   try {
+  //     const { data } = await axios.delete(
+  //       `${apiURL}/api/movies/screenings/${id}`
+  //     )
+
+  //     if (data.ok) {
+  //       console.log(data)
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
 
   return (
     <Box>
@@ -255,9 +261,7 @@ const UpdateMovie = () => {
                 </Grid>
 
                 <Typography>Add Screenings</Typography>
-                <AddScreenings
-                  movie={chosenMovie}
-                />
+                <AddScreenings movie={chosenMovie} />
               </>
             ) : null}
           </Box>
@@ -292,13 +296,19 @@ const UpdateMovie = () => {
             {activeStep === 2 ? (
               <Button
                 onClick={() => {
-                  handleUpdateMovie()
+                  updateMovie()
                 }}
               >
                 Finish
               </Button>
             ) : null}
           </Box>
+          <Toast
+            msg={msg}
+            status={toastStatus ? toastStatus : 'info'}
+            open={open}
+            setOpen={setOpen}
+          />
         </React.Fragment>
       )}
     </Box>

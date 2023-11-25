@@ -25,6 +25,26 @@ export const handleAddMovie = async (movie: Movie, image: string) => {
   }
 }
 
+export const handleDeleteMovie = async (movie: Movie) => {
+  try {
+    const { data } = await axios.delete(`${apiURL}/api/movies/${movie?._id}`)
+    return data
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export const handleUpdateMovie = async (movie: Movie) => {
+  try {
+    const { data } = await axios.patch(`${apiURL}/api/movies/${movie._id}`, {
+      movie,
+    })
+    return data
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export const handleAddScreenings = async (
   movie: Movie,
   times: any[],
@@ -43,10 +63,13 @@ export const handleAddScreenings = async (
   }
 }
 
-export const handleDeleteMovie = async (movie: Movie) => {
+export const handleDeleteScreening = async (id: string) => {
   try {
-    const { data } = await axios.delete(`${apiURL}/api/movies/${movie?._id}`)
-    return data
+    const { data } = await axios.delete(`${apiURL}/api/movies/screenings/${id}`)
+
+    if (data.ok) {
+      console.log(data)
+    }
   } catch (error) {
     console.error(error)
   }
