@@ -1,14 +1,10 @@
-import { Box, Typography, Button, Paper, InputLabel } from '@mui/material'
+import { Box, Typography, Button, Paper, InputLabel, CircularProgress } from '@mui/material'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useAppDispatch } from '../app/hooks'
 import { login } from '../features/loggedInUser/userAPI'
-import axios from 'axios'
-import { apiURL } from '../api/apiUrl'
 import MovieCard from '../components/MovieCard'
-// import HoverCarousel from 'hover-carousel'
 import { Movie, Screenings } from '../types/types'
 import Toast from '../components/Toast'
-import { AlertColor } from '@mui/material/Alert'
 import useToast from '../hooks/useToast'
 import { Carousel } from '../components/Carousel/Carousel'
 import { getAllMovies, handleFindMoviesByDate } from '../api/moviesApi'
@@ -157,7 +153,7 @@ export const Home: React.FC = () => {
                 )
               })}
             </>
-          ) : null}
+          ) : <CircularProgress/>}
         </Box>
       </Box>
       <Toast

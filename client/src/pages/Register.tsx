@@ -1,8 +1,6 @@
 import { Box, TextField, Typography, Paper } from '@mui/material'
 import React, { useState } from 'react'
 import { Button } from '@mui/material'
-import axios from 'axios'
-import { apiURL } from '../api/apiUrl'
 import { useNavigate } from 'react-router-dom'
 import { handleRegister } from '../api/authApi'
 import useToast from '../hooks/useToast'

@@ -2,7 +2,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Button,
   Paper,
   TextField,
@@ -10,11 +9,8 @@ import {
 } from '@mui/material'
 import React, { useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import axios from 'axios'
-import { apiURL } from '../api/apiUrl'
 import EmptyImage from '../assets/203873-200.png'
 import { useNavigate } from 'react-router-dom'
-import Instructions from './Instructions'
 import AddScreenings from './AddScreenings'
 import { Movie } from '../types/types'
 import { handleAddMovie } from '../api/moviesApi'
