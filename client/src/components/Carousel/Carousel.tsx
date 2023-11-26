@@ -10,13 +10,10 @@ export const Carousel: FC<CarouselProps> = ({ images }) => {
 
   const handleChangeIndex = () => {
     if (index! >= length - 1) {
-      console.log(index)
       setIndex(0)
     } else if (index! > length) {
-      console.log('rnte 2 ')
       setIndex(0)
     } else {
-      console.log('rnter 3' + index)
       setIndex((prevState) => prevState! + 1)
     }
   }
@@ -24,10 +21,11 @@ export const Carousel: FC<CarouselProps> = ({ images }) => {
   return (
     <div
       style={{
-        position: 'fixed',
+        position: 'absolute',
         overflow: 'hidden',
         width: '90%',
         height: '250px',
+        zIndex: "-1"
       }}
     >
       <img
