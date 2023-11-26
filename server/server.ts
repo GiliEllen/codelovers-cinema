@@ -9,7 +9,7 @@ const app = express();
 
 dotenv.config();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 8000;
 const mongodb_uri = process.env.MONGO_URI;
 
 app.use(bodyParser.json({ limit: "10mb" }));
