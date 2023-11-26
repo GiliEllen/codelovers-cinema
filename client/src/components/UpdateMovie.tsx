@@ -161,7 +161,7 @@ const UpdateMovie = () => {
                           sx={{
                             backgroundColor:
                               idx == movieIdx ? '#cecece' : 'white',
-                            minWidth: '300px',
+                            minWidth: '300px', maxWidth: "300px"
                           }}
                           onClick={() => {
                             setMovieIdx(idx)

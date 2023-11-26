@@ -29,7 +29,7 @@ const Register = () => {
           setToastStatus('success')
           setOpen(true)
           // for onRender.com, which does not allow cookies
-          sessionStorage.setItem("userID", data.userDB._id)
+          sessionStorage.setItem('userID', data.userDB._id)
           setTimeout(() => {
             navigate('/')
           }, 2000)
@@ -115,13 +115,13 @@ const Register = () => {
           />
           <Button type="submit">Sign Up</Button>
         </form>
+        <Toast
+          msg={msg}
+          status={toastStatus ? toastStatus : 'info'}
+          open={open}
+          setOpen={setOpen}
+        />
       </Paper>
-      <Toast
-        msg={msg}
-        status={toastStatus ? toastStatus : 'info'}
-        open={open}
-        setOpen={setOpen}
-      />
     </Box>
   )
 }

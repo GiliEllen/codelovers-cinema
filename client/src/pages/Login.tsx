@@ -22,7 +22,7 @@ const Login = () => {
         setToastStatus('success')
         setOpen(true)
         // for onRender.com, which does not allow cookies
-        sessionStorage.setItem("userID", data.userDB._id)
+        sessionStorage.setItem('userID', data.userDB._id)
         setTimeout(() => {
           navigate('/')
         }, 2000)
@@ -41,6 +41,7 @@ const Login = () => {
         height: '100vh',
         display: 'flex',
         justifyContent: 'center',
+        margin: 'auto',
       }}
     >
       <Paper
@@ -86,13 +87,14 @@ const Login = () => {
           />
           <Button type="submit">LOG IN</Button>
         </form>
-      </Paper>
-      <Toast
+        <Toast
         msg={msg}
         status={toastStatus ? toastStatus : 'info'}
         open={open}
         setOpen={setOpen}
       />
+      </Paper>
+
     </Box>
   )
 }
