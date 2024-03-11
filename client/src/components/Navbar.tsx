@@ -70,6 +70,7 @@ export default function Navbar(props: Props) {
         <List>
           {navItems.map((item) => (
             <ListItem
+           
               onClick={() => {
                 navigate(item.href)
               }}
@@ -136,8 +137,8 @@ export default function Navbar(props: Props) {
           ) : (
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
               {navItems.map((item) => (
-                <NavLink to={item.href}>
-                  <Button key={item.name} sx={{ color: '#fff' }}>
+                <NavLink to={item.href} key={item.name}>
+                  <Button  sx={{ color: '#fff' }}>
                     {item.name}
                   </Button>
                 </NavLink>

@@ -27,6 +27,7 @@ export const Home: React.FC = () => {
       const data = await getAllMovies()
       if (data.ok) {
         setMovies(data.message)
+        setMoviesToDisplay(data.message)
         setMoviesPosters(
           data.message.map((movie: Movie) => {
             return movie.image
@@ -48,7 +49,6 @@ export const Home: React.FC = () => {
       const data = await handleFindMoviesByDate(newStartingDate, newEndingDate)
 
       if (data.ok && data.message.length > 0) {
-        console.log(data.message)
         setMoviesToDisplay(
           data.message.map((screening: Screenings) => {
             if (typeof screening.movieId != 'string') {
@@ -81,9 +81,9 @@ export const Home: React.FC = () => {
     getMovies()
   }, [])
 
-  useEffect(() => {
-    setMoviesToDisplay(movies)
-  }, [movies])
+  // useEffect(() => {
+  //   setMoviesToDisplay(movies)
+  // }, [movies])
 
   return (
     <Fragment>
@@ -143,9 +143,10 @@ export const Home: React.FC = () => {
           {moviesToDisplay.length > 0 ? (
             <>
               {moviesToDisplay.map((movie, idx) => {
+                
                 return (
                   <MovieCard
-                    key={`${movie._id}-${movie.screenings[0]._id}-${
+                    key={`${movie._id}-${movie.screenings[0] && movie.screenings[0]._id ? movie.screenings[0]._id : idx}-${
                       movie.filtered ? 'F' : 'N'
                     }`}
                     movie={movie}

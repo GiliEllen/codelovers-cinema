@@ -66,19 +66,20 @@ const MovieCard: FC<Props> = ({ movie }) => {
       <Stack spacing={2} alignItems={'center'}>
         <Typography>Showing on:</Typography>
         <Grid container spacing={1} direction={'row'}>
-          {datesArr.map((date) => {
+          {datesArr.map((date, idx) => {
             return (
-              <Grid item>
+              <Grid item  key={idx}>
                 {movie.filtered ? (
                   <Chip
+                   
                     color="primary"
-                    label={`${moment(date.dateTime).format("D[.]MM  [at] LT")}`}
-
+                    label={`${moment(date.dateTime).format('D[.]MM  [at] LT')}`}
                   />
                 ) : (
                   <Chip
+                   
                     color="primary"
-                    label={`${moment(date.dateTime).format("D[.]MM")}`}
+                    label={`${moment(date.dateTime).format('D[.]MM')}`}
                   />
                 )}
               </Grid>
