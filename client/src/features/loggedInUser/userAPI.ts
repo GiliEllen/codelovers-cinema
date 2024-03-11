@@ -9,6 +9,7 @@ export const login = createAsyncThunk(
   async (_, thunkApi) => {
     try {
       const userID = sessionStorage.getItem("userID")
+      if (!userID) return
       const { data } = await axios.get(`${apiURL}/api/users/get-user/${userID}`, {withCredentials: true});
       const { userDB } = data;
 
